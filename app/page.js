@@ -44,7 +44,7 @@ export default function Home(){
 
   if(mode==="welcome") return <Welcome onStart={()=>{setAuthMode("register");setMode("onboarding")}} onLogin={()=>{setAuthMode("login");setMode("login")}} onDemo={()=>setMode("app")}/>;
   if(mode==="login") return <LoginScreen login={login} setLogin={setLogin} back={()=>setMode("welcome")} register={()=>{setAuthMode("register");setMode("onboarding")}} success={(saved)=>{setForm(saved);localStorage.setItem("gs_session","active");setMode("app")}}/>;
-  if(mode==="onboarding") return <Onboarding step={step} setStep={setStep} form={form} update={update} toggleSocial={toggleSocial} finish={()=>{try{localStorage.setItem("gs_user",JSON.stringify(form));localStorage.setItem("gs_session","active")}catch(e){}setMode("app")}/>;
+  if(mode==="onboarding") return <Onboarding step={step} setStep={setStep} form={form} update={update} toggleSocial={toggleSocial} finish={()=>{try{localStorage.setItem("gs_user",JSON.stringify(form));localStorage.setItem("gs_session","active")}catch(e){}setMode("app")}}/>;
 
   return <Dashboard active={active} setActive={setActive} mobile={mobile} setMobile={setMobile} form={form} contents={contents} setContents={setContents} studio={studio} setStudio={setStudio} logout={()=>{try{localStorage.removeItem("gs_session")}catch(e){}setMode("welcome");setStep(1)}}/>;
 }
