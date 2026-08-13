@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Sparkles, CalendarDays, Library, Share2, Settings, Bell, Search,
   Plus, Instagram, Facebook, Linkedin, Video, Clock3, TrendingUp, WandSparkles,
   ChevronRight, Image as ImageIcon, Film, Layers3, Menu, X, ArrowRight, ArrowLeft,
-  Building2, Laptop, BriefcaseBusiness, Globe2, Check, KeyRound, UserRound, LogOut
+  Building2, Laptop, BriefcaseBusiness, Globe2, Check, KeyRound, UserRound, LogOut, Save, Send, FileText, Smile, Target, ExternalLink, BookOpen, Copy, Trash2
 } from "lucide-react";
 
 const nav = [
@@ -23,6 +23,8 @@ export default function Home(){
   const [step,setStep]=useState(1);
   const [active,setActive]=useState("Dashboard");
   const [mobile,setMobile]=useState(false);
+  const [contents,setContents]=useState([]);
+  const [studio,setStudio]=useState({format:"Post",channels:["Instagram"],topic:"",goal:"Informare",tone:"Professionale",result:""});
   const [form,setForm]=useState({name:"",surname:"",email:"",password:"",type:"",business:"",sector:"",description:"",website:"",socialUrl:"",api:"",socials:[]});
 
   const update=(k,v)=>setForm({...form,[k]:v});
@@ -31,7 +33,7 @@ export default function Home(){
   if(mode==="welcome") return <Welcome onStart={()=>setMode("onboarding")} onDemo={()=>setMode("app")}/>;
   if(mode==="onboarding") return <Onboarding step={step} setStep={setStep} form={form} update={update} toggleSocial={toggleSocial} finish={()=>setMode("app")}/>;
 
-  return <Dashboard active={active} setActive={setActive} mobile={mobile} setMobile={setMobile} form={form} logout={()=>{setMode("welcome");setStep(1)}}/>;
+  return <Dashboard active={active} setActive={setActive} mobile={mobile} setMobile={setMobile} form={form} contents={contents} setContents={setContents} studio={studio} setStudio={setStudio} logout={()=>{setMode("welcome");setStep(1)}}/>;
 }
 
 function Welcome({onStart,onDemo}){
@@ -87,7 +89,7 @@ function Step4({form,update}){return <div className="step-content"><div classNam
 function Step5({form,update}){return <div className="step-content"><div className="step-icon"><KeyRound/></div><h1>Prepara il tuo assistente AI.</h1><p>Predisponiamo il collegamento a OpenAI. In questa V2 la chiave rimane solo nell'interfaccia demo e non viene memorizzata.</p><div className="form-stack"><Field icon={KeyRound} label="OpenAI API Key" type="password" placeholder="sk-..." value={form.api} onChange={e=>update("api",e.target.value)}/></div><div className="security-box"><b>🔐 Nota sulla sicurezza</b><span>Nella versione definitiva le chiavi API non saranno mai esposte pubblicamente nel browser e verranno gestite lato server.</span></div></div>}
 function Step6({form,toggleSocial}){return <div className="step-content"><div className="step-icon"><Share2/></div><h1>Scegli i tuoi canali.</h1><p>Seleziona i social che vorresti gestire. I collegamenti OAuth reali arriveranno negli step successivi.</p><div className="social-choice">{socials.map(s=>{let I=s.icon,sel=form.socials.includes(s.name);return <button key={s.name} className={sel?"selected":""} onClick={()=>toggleSocial(s.name)}><div className={"social-icon "+s.cls}><I/></div><b>{s.name}</b><span>{sel?<><Check/> Selezionato</>:"Seleziona"}</span></button>})}</div></div>}
 
-function Dashboard({active,setActive,mobile,setMobile,form,logout}){
+function Dashboard({active,setActive,mobile,setMobile,form,contents,setContents,studio,setStudio,logout}){
  const name=form.name||"Mario", business=form.business||"Il tuo workspace";
  return <main className="app-shell">
   <aside className={"sidebar "+(mobile?"open":"")}><div className="brand"><div className="brand-mark"><Sparkles size={22}/></div><div><strong>gestionale</strong><span>social</span></div><button className="close" onClick={()=>setMobile(false)}><X/></button></div>
@@ -97,7 +99,11 @@ function Dashboard({active,setActive,mobile,setMobile,form,logout}){
   </aside>
   <section className="content"><header><button className="hamb" onClick={()=>setMobile(true)}><Menu/></button><div className="search"><Search size={18}/><input placeholder="Cerca contenuti, campagne..."/></div><div className="header-actions"><button className="icon-btn"><Bell size={19}/><i/></button><div className="avatar small">{name[0].toUpperCase()}</div></div></header>
   <div className="page"><div className="hero"><div><span className="eyebrow">WORKSPACE / {active.toUpperCase()}</span><h1>{active==="Dashboard"?`Ciao ${name} 👋`:active}</h1><p>{active==="Dashboard"?"Il tuo spazio di lavoro è pronto. Inizia a organizzare i contenuti del brand.":"Sezione predisposta per i prossimi step di sviluppo."}</p></div><button className="primary"><Plus size={18}/> Crea contenuto</button></div>
-  {active!=="Dashboard"?<Placeholder active={active}/>:<DashboardHome form={form}/>}</div></section>
+  {active==="Dashboard"?<DashboardHome form={form}/>:
+    active==="Content Studio"?<ContentStudio studio={studio} setStudio={setStudio} contents={contents} setContents={setContents}/>:
+    active==="Libreria"?<LibraryView contents={contents} setContents={setContents}/>:
+    active==="Impostazioni"?<SettingsView form={form}/>:
+    <Placeholder active={active}/>}</div></section>
  </main>
 }
 
@@ -110,5 +116,67 @@ function DashboardHome({form}){
  <div className="bottom-grid"><section className="panel"><div className="panel-head"><div><h2>I tuoi canali</h2><p>Canali scelti durante l'onboarding</p></div><button className="link">Gestisci <ChevronRight size={16}/></button></div><div className="social-grid">{socials.map(s=>{let I=s.icon,on=form.socials.length?form.socials.includes(s.name):["Instagram","Facebook"].includes(s.name);return <div className="social-card" key={s.name}><div className={"social-icon "+s.cls}><I size={22}/></div><div><b>{s.name}</b><small className={on?"connected":""}>{on?"Selezionato":"Da collegare"}</small></div><span className={on?"dot ok":"dot"}/></div>})}</div></section>
  <section className="panel"><div className="panel-head"><div><h2>Crea rapidamente</h2><p>Scegli il formato</p></div></div><div className="create-grid"><button><ImageIcon/><span><b>Post</b><small>Immagine + copy</small></span></button><button><Layers3/><span><b>Carosello</b><small>Più slide</small></span></button><button><Film/><span><b>Reel</b><small>Video verticale</small></span></button><button><Sparkles/><span><b>Storia</b><small>Contenuto rapido</small></span></button></div></section></div></>
 }
+
+function ContentStudio({studio,setStudio,contents,setContents}){
+ const formats=[["Post",ImageIcon],["Carosello",Layers3],["Reel / Video",Film],["Storia",Sparkles]];
+ const toggle=(n)=>setStudio({...studio,channels:studio.channels.includes(n)?studio.channels.filter(x=>x!==n):[...studio.channels,n]});
+ const generate=()=>{
+  const topic=studio.topic.trim()||"il tuo prossimo contenuto";
+  const base=studio.format==="Carosello"
+   ? `SLIDE 1 — ${topic}\n\nSLIDE 2 — Il problema\nSpiega in modo semplice perché questo tema è importante per il tuo pubblico.\n\nSLIDE 3 — Il valore\nMostra una soluzione concreta e utile.\n\nSLIDE 4 — Il consiglio\nAggiungi un suggerimento pratico che l'utente può applicare subito.\n\nSLIDE 5 — CTA\nVuoi saperne di più? Scrivici o salva questo carosello.`
+   : studio.format==="Reel / Video"
+   ? `HOOK\n“Se ti occupi di ${topic}, fermati 30 secondi.”\n\nSCENA 1\nPresenta il problema in modo diretto.\n\nSCENA 2\nMostra il vantaggio o la soluzione.\n\nSCENA 3\nAggiungi un esempio concreto.\n\nCTA\n“Seguici per altri contenuti come questo.”`
+   : studio.format==="Storia"
+   ? `STORIA 1\n👋 Oggi parliamo di ${topic}.\n\nSTORIA 2\nUna cosa importante da sapere: comunica un beneficio concreto.\n\nSTORIA 3\n💬 Vuoi approfondire? Rispondi a questa storia.`
+   : `✨ ${topic}\n\nUna comunicazione efficace parte da un messaggio semplice: capire il bisogno del pubblico e trasformarlo in valore concreto.\n\nRacconta cosa rende la tua attività diversa, mostra un beneficio reale e invita le persone a fare il passo successivo.\n\n👉 Vuoi saperne di più? Contattaci.\n\n#socialmedia #business #comunicazione`;
+  setStudio({...studio,result:base});
+ };
+ const save=()=>{if(!studio.result)return;setContents([{id:Date.now(),title:studio.topic||"Contenuto senza titolo",format:studio.format,channels:studio.channels,text:studio.result,status:"Bozza"},...contents])};
+ return <div className="studio-layout">
+  <section className="panel studio-builder">
+   <div className="panel-head"><div><h2>Content Studio</h2><p>Configura il contenuto che vuoi creare</p></div><span className="pill purple">AI DEMO</span></div>
+   <label className="studio-label">1. Formato</label><div className="format-grid">{formats.map(([n,I])=><button className={studio.format===n?"selected":""} key={n} onClick={()=>setStudio({...studio,format:n})}><I/><b>{n}</b></button>)}</div>
+   <label className="studio-label">2. Canali</label><div className="channel-row">{socials.map(x=>{let I=x.icon,on=studio.channels.includes(x.name);return <button className={on?"selected":""} key={x.name} onClick={()=>toggle(x.name)}><I/><span>{x.name}</span>{on&&<Check/>}</button>})}</div>
+   <label className="studio-label">3. Di cosa vuoi parlare?</label><textarea className="topic" placeholder="Es. Voglio promuovere il nuovo servizio di consulenza per piccole attività..." value={studio.topic} onChange={e=>setStudio({...studio,topic:e.target.value})}/>
+   <div className="studio-selects"><label><span>Obiettivo</span><select value={studio.goal} onChange={e=>setStudio({...studio,goal:e.target.value})}><option>Informare</option><option>Vendere</option><option>Engagement</option><option>Brand awareness</option></select></label><label><span>Tono</span><select value={studio.tone} onChange={e=>setStudio({...studio,tone:e.target.value})}><option>Professionale</option><option>Amichevole</option><option>Diretto</option><option>Creativo</option><option>Ispirazionale</option></select></label></div>
+   <button className="primary generate-btn" onClick={generate}><WandSparkles/> Genera contenuto</button>
+  </section>
+  <section className="panel studio-output">
+   <div className="panel-head"><div><h2>Anteprima</h2><p>Il risultato diventerà modificabile</p></div>{studio.result&&<button className="copy-btn" onClick={()=>navigator.clipboard?.writeText(studio.result)}><Copy/> Copia</button>}</div>
+   {!studio.result?<div className="empty-output"><div><Sparkles/></div><h3>Il contenuto apparirà qui</h3><p>Configura le opzioni a sinistra e premi “Genera contenuto”.</p></div>:<>
+    <div className="output-meta"><span>{studio.format}</span>{studio.channels.map(c=><span key={c}>{c}</span>)}</div>
+    <textarea className="result-editor" value={studio.result} onChange={e=>setStudio({...studio,result:e.target.value})}/>
+    <div className="result-actions"><button className="secondary" onClick={save}><Save/> Salva in Libreria</button><button className="primary"><CalendarDays/> Programma</button></div>
+   </>}
+  </section>
+ </div>
+}
+
+function LibraryView({contents,setContents}){
+ return <section className="panel library-panel"><div className="panel-head"><div><h2>Libreria contenuti</h2><p>Le bozze create durante questa sessione</p></div><span className="counter">{contents.length} contenuti</span></div>
+ {!contents.length?<div className="library-empty"><Library/><h3>La libreria è vuota</h3><p>Crea un contenuto dal Content Studio e salvalo come bozza.</p></div>:
+ <div className="library-list">{contents.map(c=><article key={c.id}><div className="library-type"><FileText/></div><div className="library-copy"><div><b>{c.title}</b><span>{c.format} • {c.channels.join(", ")}</span></div><p>{c.text.slice(0,150)}{c.text.length>150?"...":""}</p></div><span className="draft">{c.status}</span><button className="trash" onClick={()=>setContents(contents.filter(x=>x.id!==c.id))}><Trash2/></button></article>)}</div>}</section>
+}
+
+function SettingsView({form}){
+ const [showGuide,setShowGuide]=useState(true);
+ return <div className="settings-layout">
+  <section className="panel settings-nav"><h2>Impostazioni</h2><button className="active"><KeyRound/> OpenAI</button><button><Building2/> Profilo Brand</button><button><UserRound/> Account</button></section>
+  <section className="panel api-settings">
+   <span className="pill purple">INTEGRAZIONE AI</span><h2>OpenAI API</h2><p className="settings-intro">Collega in futuro il tuo account API OpenAI per generare i contenuti direttamente dal gestionale.</p>
+   <div className="api-status"><div className="api-status-icon"><KeyRound/></div><div><b>Chiave API</b><span>{form.api?"Inserita durante l'onboarding (solo demo)":"Non configurata"}</span></div><span className={form.api?"status-demo":"status-off"}>{form.api?"DEMO":"NON COLLEGATA"}</span></div>
+   <div className="api-field-demo"><label>OpenAI API Key</label><div><input type="password" value={form.api||""} readOnly placeholder="sk-..."/><button>Verifica connessione</button></div><small>In questa V3 il pulsante è dimostrativo: la chiave non viene inviata né salvata.</small></div>
+   <button className="guide-toggle" onClick={()=>setShowGuide(!showGuide)}><BookOpen/> {showGuide?"Nascondi guida":"Come ottenere la chiave API?"} <ChevronRight/></button>
+   {showGuide&&<div className="api-guide"><h3>Come ottenere una chiave API OpenAI</h3>
+    <div className="guide-step"><b>1</b><div><strong>Accedi alla piattaforma OpenAI</strong><p>Usa il tuo account OpenAI. ChatGPT e la piattaforma API sono servizi separati.</p><a href="https://platform.openai.com/" target="_blank" rel="noreferrer">Apri OpenAI Platform <ExternalLink/></a></div></div>
+    <div className="guide-step"><b>2</b><div><strong>Configura la fatturazione API</strong><p>Se necessario, aggiungi un metodo di pagamento o credito nella sezione Billing della piattaforma. Un abbonamento ChatGPT non include automaticamente l'utilizzo API.</p><a href="https://platform.openai.com/settings/organization/billing/overview" target="_blank" rel="noreferrer">Apri Billing <ExternalLink/></a></div></div>
+    <div className="guide-step"><b>3</b><div><strong>Crea la tua Secret API key</strong><p>Apri la sezione API keys e crea una nuova chiave segreta. Copiala quando viene mostrata.</p><a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Apri API Keys <ExternalLink/></a></div></div>
+    <div className="guide-step"><b>4</b><div><strong>Inseriscila nel Gestionale Social</strong><p>Nella versione definitiva la chiave sarà gestita lato server. Non pubblicarla, non inserirla nel codice GitHub e non condividerla con altre persone.</p></div></div>
+    <div className="security-warning"><b>Importante</b><p>Per ora non inserire una chiave reale in questa demo. Attiveremo il collegamento soltanto quando avremo implementato una gestione sicura lato server.</p></div>
+   </div>}
+  </section>
+ </div>
+}
+
 function Stat({icon:Icon,value,label,note}){return <div className="stat"><div className="stat-icon"><Icon/></div><div><b className="stat-value">{value}</b><span>{label}</span><small>{note}</small></div></div>}
 function Placeholder({active}){let c={"Content Studio":["Crea con l'AI","Post, caroselli, Reel e Stories saranno gestiti da qui."],"Calendario":["Calendario editoriale","Programma e organizza visivamente tutti i contenuti."],"Libreria":["Libreria contenuti","Archivia bozze, immagini, video e contenuti pubblicati."],"Social":["Collega i social","Facebook, Instagram, LinkedIn e TikTok saranno configurabili qui."],"Impostazioni":["Impostazioni account","Profilo, brand, sito web, OpenAI e preferenze."]}[active];return <section className="placeholder panel"><div className="big-icon"><Sparkles/></div><span className="pill">GESTIONALE SOCIAL</span><h2>{c[0]}</h2><p>{c[1]}</p><button className="primary">Sezione predisposta</button></section>}
