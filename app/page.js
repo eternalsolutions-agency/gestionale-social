@@ -5,12 +5,12 @@ import {
   LayoutDashboard, Sparkles, CalendarDays, Library, Share2, Settings, Bell, Search,
   Plus, Instagram, Facebook, Linkedin, Video, Clock3, TrendingUp, WandSparkles,
   ChevronRight, Image as ImageIcon, Film, Layers3, Menu, X, ArrowRight, ArrowLeft,
-  Building2, Laptop, BriefcaseBusiness, Globe2, Check, KeyRound, UserRound, LogOut, Save, Send, FileText, Smile, Target, ExternalLink, BookOpen, Copy, Trash2
+  Building2, Laptop, BriefcaseBusiness, Globe2, Check, KeyRound, UserRound, LogOut, Save, Send, FileText, Smile, Target, ExternalLink, BookOpen, Copy, Trash2, CreditCard, WalletCards, BadgeEuro, CircleDollarSign, Bot, Clapperboard, Crown, ReceiptText, ArrowUpRight
 } from "lucide-react";
 
 const nav = [
   ["Dashboard", LayoutDashboard], ["Content Studio", Sparkles], ["Calendario", CalendarDays],
-  ["Libreria", Library], ["Social", Share2], ["Impostazioni", Settings],
+  ["Libreria", Library], ["Social", Share2], ["Piani & Fatturazione", CreditCard], ["Impostazioni", Settings],
 ];
 
 const socials = [
@@ -24,7 +24,7 @@ export default function Home(){
   const [active,setActive]=useState("Dashboard");
   const [mobile,setMobile]=useState(false);
   const [contents,setContents]=useState([]);
-  const [studio,setStudio]=useState({format:"Post",channels:["Instagram"],topic:"",goal:"Informare",tone:"Professionale",result:""});
+  const [studio,setStudio]=useState({format:"Post",channels:["Instagram"],topic:"",goal:"Informare",tone:"Professionale",provider:"OpenAI",videoProvider:"Google AI Video",result:""});
   const [form,setForm]=useState({name:"",surname:"",email:"",password:"",type:"",business:"",sector:"",description:"",website:"",socialUrl:"",api:"",socials:[]});
 
   const update=(k,v)=>setForm({...form,[k]:v});
@@ -102,6 +102,7 @@ function Dashboard({active,setActive,mobile,setMobile,form,contents,setContents,
   {active==="Dashboard"?<DashboardHome form={form}/>:
     active==="Content Studio"?<ContentStudio studio={studio} setStudio={setStudio} contents={contents} setContents={setContents}/>:
     active==="Libreria"?<LibraryView contents={contents} setContents={setContents}/>:
+    active==="Piani & Fatturazione"?<BillingView/>:
     active==="Impostazioni"?<SettingsView form={form}/>:
     <Placeholder active={active}/>}</div></section>
  </main>
@@ -137,14 +138,20 @@ function ContentStudio({studio,setStudio,contents,setContents}){
    <div className="panel-head"><div><h2>Content Studio</h2><p>Configura il contenuto che vuoi creare</p></div><span className="pill purple">AI DEMO</span></div>
    <label className="studio-label">1. Formato</label><div className="format-grid">{formats.map(([n,I])=><button className={studio.format===n?"selected":""} key={n} onClick={()=>setStudio({...studio,format:n})}><I/><b>{n}</b></button>)}</div>
    <label className="studio-label">2. Canali</label><div className="channel-row">{socials.map(x=>{let I=x.icon,on=studio.channels.includes(x.name);return <button className={on?"selected":""} key={x.name} onClick={()=>toggle(x.name)}><I/><span>{x.name}</span>{on&&<Check/>}</button>})}</div>
-   <label className="studio-label">3. Di cosa vuoi parlare?</label><textarea className="topic" placeholder="Es. Voglio promuovere il nuovo servizio di consulenza per piccole attività..." value={studio.topic} onChange={e=>setStudio({...studio,topic:e.target.value})}/>
+   <label className="studio-label">3. Motore AI</label>
+   <div className="provider-grid">
+    <button className={studio.provider==="OpenAI"?"selected":""} onClick={()=>setStudio({...studio,provider:"OpenAI"})}><Bot/><div><b>OpenAI</b><span>Testi, idee e copy</span></div></button>
+    <button className={studio.provider==="Gemini"?"selected":""} onClick={()=>setStudio({...studio,provider:"Gemini"})}><Sparkles/><div><b>Google Gemini</b><span>Testi e contenuti multimodali</span></div></button>
+   </div>
+   {(studio.format==="Reel / Video"||studio.format==="Storia")&&<div className="video-provider"><Clapperboard/><div><b>Video AI</b><span>{studio.videoProvider} • predisposto per Veo</span></div><select value={studio.videoProvider} onChange={e=>setStudio({...studio,videoProvider:e.target.value})}><option>Google AI Video</option></select></div>}
+   <label className="studio-label">4. Di cosa vuoi parlare?</label><textarea className="topic" placeholder="Es. Voglio promuovere il nuovo servizio di consulenza per piccole attività..." value={studio.topic} onChange={e=>setStudio({...studio,topic:e.target.value})}/>
    <div className="studio-selects"><label><span>Obiettivo</span><select value={studio.goal} onChange={e=>setStudio({...studio,goal:e.target.value})}><option>Informare</option><option>Vendere</option><option>Engagement</option><option>Brand awareness</option></select></label><label><span>Tono</span><select value={studio.tone} onChange={e=>setStudio({...studio,tone:e.target.value})}><option>Professionale</option><option>Amichevole</option><option>Diretto</option><option>Creativo</option><option>Ispirazionale</option></select></label></div>
    <button className="primary generate-btn" onClick={generate}><WandSparkles/> Genera contenuto</button>
   </section>
   <section className="panel studio-output">
    <div className="panel-head"><div><h2>Anteprima</h2><p>Il risultato diventerà modificabile</p></div>{studio.result&&<button className="copy-btn" onClick={()=>navigator.clipboard?.writeText(studio.result)}><Copy/> Copia</button>}</div>
    {!studio.result?<div className="empty-output"><div><Sparkles/></div><h3>Il contenuto apparirà qui</h3><p>Configura le opzioni a sinistra e premi “Genera contenuto”.</p></div>:<>
-    <div className="output-meta"><span>{studio.format}</span>{studio.channels.map(c=><span key={c}>{c}</span>)}</div>
+    <div className="output-meta"><span>{studio.format}</span><span>{studio.provider}</span>{studio.channels.map(c=><span key={c}>{c}</span>)}</div>
     <textarea className="result-editor" value={studio.result} onChange={e=>setStudio({...studio,result:e.target.value})}/>
     <div className="result-actions"><button className="secondary" onClick={save}><Save/> Salva in Libreria</button><button className="primary"><CalendarDays/> Programma</button></div>
    </>}
@@ -158,23 +165,62 @@ function LibraryView({contents,setContents}){
  <div className="library-list">{contents.map(c=><article key={c.id}><div className="library-type"><FileText/></div><div className="library-copy"><div><b>{c.title}</b><span>{c.format} • {c.channels.join(", ")}</span></div><p>{c.text.slice(0,150)}{c.text.length>150?"...":""}</p></div><span className="draft">{c.status}</span><button className="trash" onClick={()=>setContents(contents.filter(x=>x.id!==c.id))}><Trash2/></button></article>)}</div>}</section>
 }
 
-function SettingsView({form}){
- const [showGuide,setShowGuide]=useState(true);
- return <div className="settings-layout">
-  <section className="panel settings-nav"><h2>Impostazioni</h2><button className="active"><KeyRound/> OpenAI</button><button><Building2/> Profilo Brand</button><button><UserRound/> Account</button></section>
-  <section className="panel api-settings">
-   <span className="pill purple">INTEGRAZIONE AI</span><h2>OpenAI API</h2><p className="settings-intro">Collega in futuro il tuo account API OpenAI per generare i contenuti direttamente dal gestionale.</p>
-   <div className="api-status"><div className="api-status-icon"><KeyRound/></div><div><b>Chiave API</b><span>{form.api?"Inserita durante l'onboarding (solo demo)":"Non configurata"}</span></div><span className={form.api?"status-demo":"status-off"}>{form.api?"DEMO":"NON COLLEGATA"}</span></div>
-   <div className="api-field-demo"><label>OpenAI API Key</label><div><input type="password" value={form.api||""} readOnly placeholder="sk-..."/><button>Verifica connessione</button></div><small>In questa V3 il pulsante è dimostrativo: la chiave non viene inviata né salvata.</small></div>
-   <button className="guide-toggle" onClick={()=>setShowGuide(!showGuide)}><BookOpen/> {showGuide?"Nascondi guida":"Come ottenere la chiave API?"} <ChevronRight/></button>
-   {showGuide&&<div className="api-guide"><h3>Come ottenere una chiave API OpenAI</h3>
-    <div className="guide-step"><b>1</b><div><strong>Accedi alla piattaforma OpenAI</strong><p>Usa il tuo account OpenAI. ChatGPT e la piattaforma API sono servizi separati.</p><a href="https://platform.openai.com/" target="_blank" rel="noreferrer">Apri OpenAI Platform <ExternalLink/></a></div></div>
-    <div className="guide-step"><b>2</b><div><strong>Configura la fatturazione API</strong><p>Se necessario, aggiungi un metodo di pagamento o credito nella sezione Billing della piattaforma. Un abbonamento ChatGPT non include automaticamente l'utilizzo API.</p><a href="https://platform.openai.com/settings/organization/billing/overview" target="_blank" rel="noreferrer">Apri Billing <ExternalLink/></a></div></div>
-    <div className="guide-step"><b>3</b><div><strong>Crea la tua Secret API key</strong><p>Apri la sezione API keys e crea una nuova chiave segreta. Copiala quando viene mostrata.</p><a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Apri API Keys <ExternalLink/></a></div></div>
-    <div className="guide-step"><b>4</b><div><strong>Inseriscila nel Gestionale Social</strong><p>Nella versione definitiva la chiave sarà gestita lato server. Non pubblicarla, non inserirla nel codice GitHub e non condividerla con altre persone.</p></div></div>
-    <div className="security-warning"><b>Importante</b><p>Per ora non inserire una chiave reale in questa demo. Attiveremo il collegamento soltanto quando avremo implementato una gestione sicura lato server.</p></div>
-   </div>}
+
+function BillingView(){
+ const [annual,setAnnual]=useState(false);
+ const [selected,setSelected]=useState("Pro");
+ const plans=[
+  {name:"Start",price:"19,90",annual:"199",desc:"Per freelance e piccole attività",features:["1 brand","2 canali social","Calendario editoriale","Libreria contenuti","AI con API personale","Post e caroselli"],featured:false},
+  {name:"Pro",price:"34,90",annual:"349",desc:"Per chi pubblica con continuità",features:["3 brand","4 canali social","Tutto di Start","Reel e Stories","OpenAI + Gemini","Google AI Video / Veo ready","Piani editoriali AI"],featured:true},
+  {name:"Agency",price:"69,90",annual:"699",desc:"Per agenzie e gestione multi-cliente",features:["10 brand","4 social per brand","Tutto di Pro","Workspace multi-cliente","Gestione team predisposta","Priorità funzionalità","Dashboard avanzata"],featured:false}
+ ];
+ return <div className="billing-wrap">
+  <section className="billing-hero panel">
+   <div><span className="pill purple">GESTIONALE SOCIAL SaaS</span><h2>Scegli il piano giusto per il tuo lavoro</h2><p>I pagamenti reali verranno collegati successivamente. La V4 mostra già il flusso commerciale completo.</p></div>
+   <div className="billing-toggle"><button className={!annual?"active":""} onClick={()=>setAnnual(false)}>Mensile</button><button className={annual?"active":""} onClick={()=>setAnnual(true)}>Annuale <span>2 mesi circa inclusi</span></button></div>
   </section>
+  <div className="plans-grid">
+   {plans.map(plan=><article className={"plan-card panel "+(plan.featured?"featured":"")} key={plan.name}>
+    {plan.featured&&<div className="popular"><Crown/> PIÙ SCELTO</div>}
+    <div className="plan-top"><div><h3>{plan.name}</h3><p>{plan.desc}</p></div><div className="plan-price"><b>€ {annual?plan.annual:plan.price}</b><span>+ IVA / {annual?"anno":"mese"}</span></div></div>
+    <div className="plan-features">{plan.features.map(f=><span key={f}><Check/> {f}</span>)}</div>
+    <button className={plan.featured?"primary plan-btn":"secondary plan-btn"} onClick={()=>setSelected(plan.name)}>{selected===plan.name?"Piano selezionato":"Scegli "+plan.name}</button>
+   </article>)}
+  </div>
+  <section className="panel payment-panel">
+   <div className="panel-head"><div><h2>Metodo di pagamento</h2><p>Piano selezionato: <b>{selected}</b></p></div><span className="status-demo">DEMO V4</span></div>
+   <div className="payment-grid">
+    <button><div className="pay-icon stripe"><CreditCard/></div><div><b>Stripe</b><span>Carta di credito/debito e pagamenti ricorrenti</span></div><ArrowUpRight/></button>
+    <button><div className="pay-icon paypal"><WalletCards/></div><div><b>PayPal</b><span>Abbonamento ricorrente tramite account PayPal</span></div><ArrowUpRight/></button>
+   </div>
+   <div className="billing-note"><ReceiptText/><div><b>Fatturazione</b><span>Il prezzo mostrato è al netto IVA. Nella versione reale collegheremo checkout, rinnovi, fatture, upgrade/downgrade e cancellazione.</span></div></div>
+  </section>
+ </div>
+}
+
+function SettingsView({form}){
+ const [tab,setTab]=useState("AI");
+ const [showOpenAI,setShowOpenAI]=useState(true);
+ const [showGemini,setShowGemini]=useState(true);
+ return <div className="settings-layout">
+  <section className="panel settings-nav"><h2>Impostazioni</h2><button className={tab==="AI"?"active":""} onClick={()=>setTab("AI")}><Bot/> AI & API</button><button className={tab==="Brand"?"active":""} onClick={()=>setTab("Brand")}><Building2/> Profilo Brand</button><button className={tab==="Account"?"active":""} onClick={()=>setTab("Account")}><UserRound/> Account</button></section>
+  {tab!=="AI"?<section className="panel placeholder settings-placeholder"><div className="big-icon"><Settings/></div><h2>{tab==="Brand"?"Profilo Brand":"Account"}</h2><p>Sezione predisposta per i prossimi step.</p></section>:
+  <section className="panel api-settings">
+   <span className="pill purple">PROVIDER AI</span><h2>AI & API</h2><p className="settings-intro">Gestionale Social potrà usare la chiave API personale dell'utente. In V4 i collegamenti sono ancora dimostrativi e nessuna credenziale viene salvata.</p>
+   <div className="provider-settings-grid">
+    <article className="provider-setting-card"><div className="provider-title"><div className="api-status-icon"><Bot/></div><div><b>OpenAI</b><span>Copy, idee, piani editoriali e assistenza contenuti</span></div><span className={form.api?"status-demo":"status-off"}>{form.api?"DEMO":"NON COLLEGATA"}</span></div>
+     <div className="api-field-demo"><label>OpenAI API Key</label><div><input type="password" value={form.api||""} readOnly placeholder="sk-..."/><button>Verifica</button></div></div>
+     <button className="guide-toggle" onClick={()=>setShowOpenAI(!showOpenAI)}><BookOpen/> Guida OpenAI <ChevronRight/></button>
+     {showOpenAI&&<div className="mini-guide"><p><b>1.</b> Accedi alla piattaforma OpenAI.</p><p><b>2.</b> Configura la fatturazione API se richiesta.</p><p><b>3.</b> Crea una Secret API key.</p><p><b>4.</b> In futuro inseriscila qui: mai nel codice GitHub.</p><a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Apri API Keys <ExternalLink/></a></div>}
+    </article>
+    <article className="provider-setting-card"><div className="provider-title"><div className="api-status-icon gemini"><Sparkles/></div><div><b>Google Gemini</b><span>Gemini API + predisposizione Google AI Video / Veo</span></div><span className="status-off">NON COLLEGATA</span></div>
+     <div className="api-field-demo"><label>Gemini API Key</label><div><input type="password" readOnly placeholder="Inserisci la chiave Gemini in futuro"/><button>Verifica</button></div></div>
+     <button className="guide-toggle" onClick={()=>setShowGemini(!showGemini)}><BookOpen/> Guida Gemini / Veo <ChevronRight/></button>
+     {showGemini&&<div className="mini-guide"><p><b>1.</b> Apri Google AI Studio.</p><p><b>2.</b> Crea o visualizza una Gemini API key.</p><p><b>3.</b> Per modelli a pagamento abilita la fatturazione prevista da Google.</p><p><b>4.</b> I modelli video compatibili, come Veo, useranno l'integrazione Google AI.</p><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer">Apri Google AI Studio <ExternalLink/></a></div>}
+    </article>
+   </div>
+   <div className="security-warning"><b>Sicurezza delle chiavi</b><p>Non inserire ancora credenziali reali nella V4. Quando attiveremo le API, le chiamate passeranno dal server e le chiavi non dovranno mai finire nel repository GitHub o nel JavaScript inviato al browser.</p></div>
+  </section>}
  </div>
 }
 
