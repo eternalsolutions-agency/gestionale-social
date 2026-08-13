@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Sparkles, CalendarDays, Library, Share2, Settings, Bell, Search,
   Plus, Instagram, Facebook, Linkedin, Video, Clock3, TrendingUp, WandSparkles,
@@ -20,23 +20,36 @@ const socials = [
 
 export default function Home(){
   const [mode,setMode]=useState("welcome");
+  const [authMode,setAuthMode]=useState("register");
+  const [login,setLogin]=useState({email:"",password:"",error:""});
   const [step,setStep]=useState(1);
   const [active,setActive]=useState("Dashboard");
   const [mobile,setMobile]=useState(false);
   const [contents,setContents]=useState([]);
   const [studio,setStudio]=useState({format:"Post",channels:["Instagram"],topic:"",goal:"Informare",tone:"Professionale",provider:"OpenAI",videoProvider:"Google AI Video",result:""});
   const [form,setForm]=useState({name:"",surname:"",email:"",password:"",type:"",business:"",sector:"",description:"",website:"",socialUrl:"",api:"",socials:[]});
+  useEffect(()=>{
+    try{
+      const session=localStorage.getItem("gs_session");
+      const saved=JSON.parse(localStorage.getItem("gs_user")||"null");
+      const savedContents=JSON.parse(localStorage.getItem("gs_contents")||"[]");
+      if(savedContents.length)setContents(savedContents);
+      if(session&&saved){setForm(saved);setMode("app");}
+    }catch(e){}
+  },[]);
+  useEffect(()=>{try{localStorage.setItem("gs_contents",JSON.stringify(contents))}catch(e){}},[contents]);
 
   const update=(k,v)=>setForm({...form,[k]:v});
   const toggleSocial=(n)=>update("socials",form.socials.includes(n)?form.socials.filter(x=>x!==n):[...form.socials,n]);
 
-  if(mode==="welcome") return <Welcome onStart={()=>setMode("onboarding")} onDemo={()=>setMode("app")}/>;
-  if(mode==="onboarding") return <Onboarding step={step} setStep={setStep} form={form} update={update} toggleSocial={toggleSocial} finish={()=>setMode("app")}/>;
+  if(mode==="welcome") return <Welcome onStart={()=>{setAuthMode("register");setMode("onboarding")}} onLogin={()=>{setAuthMode("login");setMode("login")}} onDemo={()=>setMode("app")}/>;
+  if(mode==="login") return <LoginScreen login={login} setLogin={setLogin} back={()=>setMode("welcome")} register={()=>{setAuthMode("register");setMode("onboarding")}} success={(saved)=>{setForm(saved);localStorage.setItem("gs_session","active");setMode("app")}}/>;
+  if(mode==="onboarding") return <Onboarding step={step} setStep={setStep} form={form} update={update} toggleSocial={toggleSocial} finish={()=>{try{localStorage.setItem("gs_user",JSON.stringify(form));localStorage.setItem("gs_session","active")}catch(e){}setMode("app")}/>;
 
-  return <Dashboard active={active} setActive={setActive} mobile={mobile} setMobile={setMobile} form={form} contents={contents} setContents={setContents} studio={studio} setStudio={setStudio} logout={()=>{setMode("welcome");setStep(1)}}/>;
+  return <Dashboard active={active} setActive={setActive} mobile={mobile} setMobile={setMobile} form={form} contents={contents} setContents={setContents} studio={studio} setStudio={setStudio} logout={()=>{try{localStorage.removeItem("gs_session")}catch(e){}setMode("welcome");setStep(1)}}/>;
 }
 
-function Welcome({onStart,onDemo}){
+function Welcome({onStart,onLogin,onDemo}){
  return <main className="welcome">
    <div className="welcome-bg one"/><div className="welcome-bg two"/>
    <div className="welcome-nav"><Logo/><span>V2 • Early preview</span></div>
@@ -45,7 +58,7 @@ function Welcome({onStart,onDemo}){
        <span className="badge"><Sparkles size={14}/> Il tuo social workspace intelligente</span>
        <h1>Crea. Programma.<br/><em>Fatti notare.</em></h1>
        <p>Un unico spazio per organizzare il tuo brand, creare contenuti con l'AI e preparare la pubblicazione sui tuoi social.</p>
-       <div className="welcome-actions"><button className="primary big" onClick={onStart}>Crea il tuo workspace <ArrowRight size={18}/></button><button className="ghost" onClick={onDemo}>Esplora la demo</button><button className="text-login" onClick={onStart}>Hai già un account? Accedi</button></div>
+       <div className="welcome-actions"><button className="primary big" onClick={onStart}>Crea il tuo workspace <ArrowRight size={18}/></button><button className="ghost" onClick={onDemo}>Esplora la demo</button><button className="text-login" onClick={onLogin}>Hai già un account? Accedi</button></div>
        <div className="trust"><span><Check/> Onboarding guidato</span><span><Check/> Multi-social</span><span><Check/> AI ready</span></div>
      </div>
      <div className="preview">
@@ -59,6 +72,18 @@ function Welcome({onStart,onDemo}){
  </main>
 }
 
+
+function LoginScreen({login,setLogin,back,register,success}){
+ const submit=()=>{
+  try{
+   const saved=JSON.parse(localStorage.getItem("gs_user")||"null");
+   if(!saved){setLogin({...login,error:"Nessun account salvato su questo dispositivo. Registrati prima."});return}
+   if(saved.email!==login.email||saved.password!==login.password){setLogin({...login,error:"Email o password non corrispondono."});return}
+   success(saved);
+  }catch(e){setLogin({...login,error:"Impossibile leggere i dati locali."})}
+ };
+ return <main className="login-page"><div className="login-top"><button className="home-back" onClick={back}><ArrowLeft/> Torna all'inizio</button><Logo/></div><section className="login-card"><span className="pill purple">ACCESSO V7</span><h1>Bentornato.</h1><p>Accedi al workspace salvato su questo dispositivo.</p><div className="form-stack"><Field icon={Mail} label="Email" placeholder="nome@email.it" value={login.email} onChange={e=>setLogin({...login,email:e.target.value,error:""})}/><Field icon={LockKeyhole} label="Password" type="password" placeholder="••••••••" value={login.password} onChange={e=>setLogin({...login,password:e.target.value,error:""})}/></div>{login.error&&<div className="login-error">{login.error}</div>}<button className="primary login-submit" onClick={submit}>Accedi <ArrowRight/></button><button className="recover">Password dimenticata? <span>Funzione predisposta</span></button><div className="register-link">Non hai ancora un account? <button onClick={register}>Registrati</button></div><div className="local-warning"><ShieldCheck/><span><b>V7 — prototipo persistente locale</b>I dati vengono conservati nel browser di questo dispositivo. Non è ancora un sistema di autenticazione adatto alla produzione.</span></div></section><LegalFooter/></main>
+}
 function Logo(){return <div className="brand logo-dark"><div className="brand-mark"><Sparkles size={22}/></div><div><strong>gestionale</strong><span>social</span></div></div>}
 
 function Onboarding({step,setStep,form,update,toggleSocial,finish}){
@@ -180,7 +205,7 @@ function ConnectionsView(){
   ["Facebook","Social",Facebook,"Demo"],["Instagram","Social",Instagram,"Demo"],["LinkedIn","Social",Linkedin,"Da configurare"],["TikTok","Social",Video,"Da configurare"],
   ["Stripe","Pagamenti",CreditCard,"Non collegato"],["PayPal","Pagamenti",WalletCards,"Non collegato"]
  ];
- return <section className="panel connections"><div className="panel-head"><div><h2>Stato collegamenti</h2><p>Una vista unica di servizi AI, social e pagamenti</p></div><span className="status-demo">PRE-PRODUZIONE</span></div><div className="connections-grid">{items.map(([n,t,I,st])=><article key={n}><div className="connection-icon"><I/></div><div><b>{n}</b><span>{t}</span></div><em className={st==="Demo"?"conn-demo":"conn-off"}>{st}</em></article>)}</div></section>
+ return <section className="panel connections"><div className="panel-head"><div><h2>Stato collegamenti</h2><p>Una vista unica di servizi AI, social e pagamenti</p></div><span className="status-demo">V7 • PERSISTENZA LOCALE</span></div><div className="connections-grid">{items.map(([n,t,I,st])=><article key={n}><div className="connection-icon"><I/></div><div><b>{n}</b><span>{t}</span></div><em className={st==="Demo"?"conn-demo":"conn-off"}>{st}</em></article>)}</div></section>
 }
 
 function SupportView(){
@@ -192,7 +217,7 @@ function BrandSettings({form}){
 }
 
 function AccountSettings({form}){
- return <section className="panel account-settings"><span className="pill purple">ACCOUNT</span><h2>Profilo e fatturazione</h2><p>Dati predisposti per la futura registrazione reale e i pagamenti.</p><div className="brand-form"><Field label="Nome" value={form.name||""} readOnly/><Field label="Cognome" value={form.surname||""} readOnly/><Field label="Email" value={form.email||""} readOnly/><Field label="Tipo account" value={form.type||""} readOnly/><Field label="Ragione sociale / Nome attività" value={form.business||""} readOnly/><Field label="Partita IVA" placeholder="Da configurare" readOnly/></div><div className="billing-data"><FileCheck2/><div><b>Dati di fatturazione</b><span>Indirizzo, codice fiscale/P.IVA, SDI/PEC e altri dati saranno salvati quando collegheremo il backend.</span></div></div></section>
+ return <section className="panel account-settings"><span className="pill purple">ACCOUNT</span><h2>Profilo e fatturazione</h2><p>I dati dell’account V7 vengono mantenuti localmente sul dispositivo fino al collegamento del database.</p><div className="brand-form"><Field label="Nome" value={form.name||""} readOnly/><Field label="Cognome" value={form.surname||""} readOnly/><Field label="Email" value={form.email||""} readOnly/><Field label="Tipo account" value={form.type||""} readOnly/><Field label="Ragione sociale / Nome attività" value={form.business||""} readOnly/><Field label="Partita IVA" placeholder="Da configurare" readOnly/></div><div className="billing-data"><FileCheck2/><div><b>Dati di fatturazione</b><span>Indirizzo, codice fiscale/P.IVA, SDI/PEC e altri dati saranno salvati quando collegheremo il backend.</span></div></div></section>
 }
 
 function BillingView(){
