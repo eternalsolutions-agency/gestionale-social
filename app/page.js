@@ -5,12 +5,12 @@ import {
   LayoutDashboard, Sparkles, CalendarDays, Library, Share2, Settings, Bell, Search,
   Plus, Instagram, Facebook, Linkedin, Video, Clock3, TrendingUp, WandSparkles,
   ChevronRight, Image as ImageIcon, Film, Layers3, Menu, X, ArrowRight, ArrowLeft,
-  Building2, Laptop, BriefcaseBusiness, Globe2, Check, KeyRound, UserRound, LogOut, Save, Send, FileText, Smile, Target, ExternalLink, BookOpen, Copy, Trash2, CreditCard, WalletCards, BadgeEuro, CircleDollarSign, Bot, Clapperboard, Crown, ReceiptText, ArrowUpRight
+  Building2, Laptop, BriefcaseBusiness, Globe2, Check, KeyRound, UserRound, LogOut, Save, Send, FileText, Smile, Target, ExternalLink, BookOpen, Copy, Trash2, CreditCard, WalletCards, BadgeEuro, CircleDollarSign, Bot, Clapperboard, Crown, ReceiptText, ArrowUpRight, HelpCircle, ShieldCheck, PlugZap, RefreshCw, Scissors, AlignLeft, Hash, MessageSquareText, Eye, EyeOff, LockKeyhole, Mail, Phone, Building, FileCheck2
 } from "lucide-react";
 
 const nav = [
   ["Dashboard", LayoutDashboard], ["Content Studio", Sparkles], ["Calendario", CalendarDays],
-  ["Libreria", Library], ["Social", Share2], ["Piani & Fatturazione", CreditCard], ["Impostazioni", Settings],
+  ["Libreria", Library], ["Social", Share2], ["Stato collegamenti", PlugZap], ["Piani & Fatturazione", CreditCard], ["Assistenza", HelpCircle], ["Impostazioni", Settings],
 ];
 
 const socials = [
@@ -45,7 +45,7 @@ function Welcome({onStart,onDemo}){
        <span className="badge"><Sparkles size={14}/> Il tuo social workspace intelligente</span>
        <h1>Crea. Programma.<br/><em>Fatti notare.</em></h1>
        <p>Un unico spazio per organizzare il tuo brand, creare contenuti con l'AI e preparare la pubblicazione sui tuoi social.</p>
-       <div className="welcome-actions"><button className="primary big" onClick={onStart}>Crea il tuo workspace <ArrowRight size={18}/></button><button className="ghost" onClick={onDemo}>Esplora la demo</button></div>
+       <div className="welcome-actions"><button className="primary big" onClick={onStart}>Crea il tuo workspace <ArrowRight size={18}/></button><button className="ghost" onClick={onDemo}>Esplora la demo</button><button className="text-login" onClick={onStart}>Hai già un account? Accedi</button></div>
        <div className="trust"><span><Check/> Onboarding guidato</span><span><Check/> Multi-social</span><span><Check/> AI ready</span></div>
      </div>
      <div className="preview">
@@ -55,7 +55,7 @@ function Welcome({onStart,onDemo}){
          <div className="preview-main"><small>DASHBOARD</small><h3>Buon pomeriggio 👋</h3><div className="mini-stats"><i/><i/><i/></div><div className="mini-chart"><span/><span/><span/><span/><span/><span/><span/></div></div>
        </div>
      </div>
-   </section>
+   </section><LegalFooter/>
  </main>
 }
 
@@ -82,7 +82,7 @@ function Onboarding({step,setStep,form,update,toggleSocial,finish}){
 
 const Field=({label,icon:Icon,...props})=><label className="field"><span>{label}</span><div>{Icon&&<Icon size={18}/>}<input {...props}/></div></label>;
 
-function Step1({form,update}){return <div className="step-content"><div className="step-icon"><UserRound/></div><h1>Iniziamo da te.</h1><p>Crea il profilo che utilizzerai per accedere al tuo workspace.</p><div className="form-grid"><Field label="Nome" placeholder="Mario" value={form.name} onChange={e=>update("name",e.target.value)}/><Field label="Cognome" placeholder="Rossi" value={form.surname} onChange={e=>update("surname",e.target.value)}/><Field label="Email" placeholder="nome@email.it" value={form.email} onChange={e=>update("email",e.target.value)}/><Field label="Password" type="password" placeholder="••••••••" value={form.password} onChange={e=>update("password",e.target.value)}/></div></div>}
+function Step1({form,update}){return <div className="step-content"><div className="step-icon"><UserRound/></div><h1>Iniziamo da te.</h1><p>Crea il profilo che utilizzerai per accedere al tuo workspace.</p><div className="form-grid"><Field label="Nome" placeholder="Mario" value={form.name} onChange={e=>update("name",e.target.value)}/><Field label="Cognome" placeholder="Rossi" value={form.surname} onChange={e=>update("surname",e.target.value)}/><Field label="Email" placeholder="nome@email.it" value={form.email} onChange={e=>update("email",e.target.value)}/><Field label="Password" type="password" placeholder="••••••••" value={form.password} onChange={e=>update("password",e.target.value)}/></div><div className="consents"><label><input type="checkbox"/> <span>Accetto <b>Termini e Condizioni</b> e <b>Privacy Policy</b></span></label><label><input type="checkbox"/> <span>Desidero ricevere aggiornamenti e comunicazioni commerciali (facoltativo)</span></label></div><button className="forgot-demo"><LockKeyhole/> Hai già un account? Accesso e recupero password saranno attivati con il backend.</button></div>}
 function Step2({form,update}){let opts=[["Azienda",Building2,"Team, società o brand"],["Freelance",Laptop,"Lavori in autonomia"],["Libero professionista",BriefcaseBusiness,"Studio o attività professionale"]];return <div className="step-content"><div className="step-icon"><BriefcaseBusiness/></div><h1>Come lavori?</h1><p>Ci aiuterà a personalizzare l'esperienza e i contenuti.</p><div className="choice-grid">{opts.map(([n,I,d])=><button key={n} className={"choice "+(form.type===n?"selected":"")} onClick={()=>update("type",n)}><I/><b>{n}</b><span>{d}</span>{form.type===n&&<i><Check/></i>}</button>)}</div></div>}
 function Step3({form,update}){return <div className="step-content"><div className="step-icon"><Building2/></div><h1>Parlaci della tua attività.</h1><p>Queste informazioni diventeranno il primo contesto del tuo brand.</p><div className="form-stack"><Field label="Nome attività / Brand" placeholder="Es. Studio Rossi" value={form.business} onChange={e=>update("business",e.target.value)}/><Field label="Settore" placeholder="Es. Marketing, ristorazione, consulenza..." value={form.sector} onChange={e=>update("sector",e.target.value)}/><label className="field"><span>Descrizione breve</span><textarea placeholder="Racconta in poche righe cosa fai e a chi ti rivolgi..." value={form.description} onChange={e=>update("description",e.target.value)}/></label></div></div>}
 function Step4({form,update}){return <div className="step-content"><div className="step-icon"><Globe2/></div><h1>Dove possiamo conoscerti?</h1><p>Inserisci il tuo sito oppure una pagina social. In futuro l'AI potrà usarli per comprendere meglio il brand.</p><div className="form-stack"><Field icon={Globe2} label="Sito web" placeholder="https://www.tuosito.it" value={form.website} onChange={e=>update("website",e.target.value)}/><Field icon={Share2} label="Pagina social principale" placeholder="https://instagram.com/..." value={form.socialUrl} onChange={e=>update("socialUrl",e.target.value)}/></div><div className="info-box">💡 Puoi compilare anche uno solo dei due campi.</div></div>}
@@ -93,7 +93,7 @@ function Dashboard({active,setActive,mobile,setMobile,form,contents,setContents,
  const name=form.name||"Mario", business=form.business||"Il tuo workspace";
  return <main className="app-shell">
   <aside className={"sidebar "+(mobile?"open":"")}><div className="brand"><div className="brand-mark"><Sparkles size={22}/></div><div><strong>gestionale</strong><span>social</span></div><button className="close" onClick={()=>setMobile(false)}><X/></button></div>
-   <div className="workspace"><div className="avatar">{(name[0]||"U").toUpperCase()}</div><div><b>{business}</b><small>{form.type||"Account Business"}</small></div></div>
+   <div className="workspace"><div className="avatar">{(name[0]||"U").toUpperCase()}</div><div><b>{business}</b><small>{form.type||"Account Business"} <em className="plan-mini">PRO</em></small></div></div>
    <nav>{nav.map(([label,Icon])=><button key={label} className={active===label?"active":""} onClick={()=>{setActive(label);setMobile(false)}}><Icon size={19}/><span>{label}</span></button>)}</nav>
    <div className="upgrade"><div className="mini-spark"><WandSparkles size={18}/></div><b>Workspace AI</b><p>La base è pronta per automazioni e collegamenti reali.</p><button onClick={logout}><LogOut size={13}/> Torna all'accesso</button></div>
   </aside>
@@ -102,9 +102,11 @@ function Dashboard({active,setActive,mobile,setMobile,form,contents,setContents,
   {active==="Dashboard"?<DashboardHome form={form}/>:
     active==="Content Studio"?<ContentStudio studio={studio} setStudio={setStudio} contents={contents} setContents={setContents}/>:
     active==="Libreria"?<LibraryView contents={contents} setContents={setContents}/>:
+    active==="Stato collegamenti"?<ConnectionsView/>:
     active==="Piani & Fatturazione"?<BillingView/>:
+    active==="Assistenza"?<SupportView/>:
     active==="Impostazioni"?<SettingsView form={form}/>:
-    <Placeholder active={active}/>}</div></section>
+    <Placeholder active={active}/>}</div><LegalFooter compact/></section>
  </main>
 }
 
@@ -153,6 +155,7 @@ function ContentStudio({studio,setStudio,contents,setContents}){
    {!studio.result?<div className="empty-output"><div><Sparkles/></div><h3>Il contenuto apparirà qui</h3><p>Configura le opzioni a sinistra e premi “Genera contenuto”.</p></div>:<>
     <div className="output-meta"><span>{studio.format}</span><span>{studio.provider}</span>{studio.channels.map(c=><span key={c}>{c}</span>)}</div>
     <textarea className="result-editor" value={studio.result} onChange={e=>setStudio({...studio,result:e.target.value})}/>
+    <div className="ai-tools"><button onClick={generate}><RefreshCw/> Rigenera</button><button><MessageSquareText/> Migliora</button><button><Scissors/> Accorcia</button><button><AlignLeft/> Allunga</button><button><Sparkles/> Cambia tono</button><button><Hash/> Hashtag</button></div>
     <div className="result-actions"><button className="secondary" onClick={save}><Save/> Salva in Libreria</button><button className="primary"><CalendarDays/> Programma</button></div>
    </>}
   </section>
@@ -165,6 +168,32 @@ function LibraryView({contents,setContents}){
  <div className="library-list">{contents.map(c=><article key={c.id}><div className="library-type"><FileText/></div><div className="library-copy"><div><b>{c.title}</b><span>{c.format} • {c.channels.join(", ")}</span></div><p>{c.text.slice(0,150)}{c.text.length>150?"...":""}</p></div><span className="draft">{c.status}</span><button className="trash" onClick={()=>setContents(contents.filter(x=>x.id!==c.id))}><Trash2/></button></article>)}</div>}</section>
 }
 
+
+
+function LegalFooter({compact=false}){
+ return <footer className={"legal-footer "+(compact?"compact":"")}><span>© 2026 Gestionale Social — Proprietà di <b>rpdigital.it</b> — P. IVA 01242270575</span><nav><button>Privacy Policy</button><button>Cookie Policy</button><button>Termini e Condizioni</button></nav></footer>
+}
+
+function ConnectionsView(){
+ const items=[
+  ["OpenAI","AI",Bot,"Da configurare"],["Google Gemini","AI",Sparkles,"Da configurare"],["Google AI Video / Veo","Video",Clapperboard,"Da configurare"],
+  ["Facebook","Social",Facebook,"Demo"],["Instagram","Social",Instagram,"Demo"],["LinkedIn","Social",Linkedin,"Da configurare"],["TikTok","Social",Video,"Da configurare"],
+  ["Stripe","Pagamenti",CreditCard,"Non collegato"],["PayPal","Pagamenti",WalletCards,"Non collegato"]
+ ];
+ return <section className="panel connections"><div className="panel-head"><div><h2>Stato collegamenti</h2><p>Una vista unica di servizi AI, social e pagamenti</p></div><span className="status-demo">PRE-PRODUZIONE</span></div><div className="connections-grid">{items.map(([n,t,I,st])=><article key={n}><div className="connection-icon"><I/></div><div><b>{n}</b><span>{t}</span></div><em className={st==="Demo"?"conn-demo":"conn-off"}>{st}</em></article>)}</div></section>
+}
+
+function SupportView(){
+ return <div className="support-grid"><section className="panel support-main"><span className="pill purple">ASSISTENZA</span><h2>Come possiamo aiutarti?</h2><p>Area predisposta per supporto, documentazione e domande frequenti.</p><div className="faq-list">{["Come collego OpenAI o Gemini?","Come funzionano i piani?","Come collegherò i miei social?","Dove trovo i contenuti salvati?"].map((x,i)=><button key={x}><span><b>{String(i+1).padStart(2,"0")}</b>{x}</span><ChevronRight/></button>)}</div></section><section className="panel contact-support"><div className="big-support"><HelpCircle/></div><h3>Hai bisogno di assistenza?</h3><p>Il canale di supporto ufficiale verrà collegato a rpdigital.it prima del lancio.</p><button className="secondary"><Globe2/> rpdigital.it</button></section></div>
+}
+
+function BrandSettings({form}){
+ return <section className="panel brand-settings"><span className="pill purple">BRAND VOICE</span><h2>Profilo del Brand</h2><p>Queste informazioni aiuteranno l'AI a creare contenuti meno generici e più coerenti.</p><div className="profile-summary"><div><Building2/></div><section><b>{form.business||"Nome attività"}</b><span>{form.sector||"Settore non specificato"}</span></section></div><div className="brand-form"><Field label="Nome attività / Ragione sociale" value={form.business||""} readOnly placeholder="Nome attività"/><Field label="Sito web" value={form.website||""} readOnly placeholder="https://..."/><Field label="Partita IVA" placeholder="Inserisci P. IVA" readOnly/><Field label="Pubblico principale" placeholder="Es. PMI, professionisti, famiglie..." readOnly/><Field label="Tono del brand" placeholder="Professionale, diretto, amichevole..." readOnly/><Field label="CTA preferita" placeholder="Es. Richiedi informazioni" readOnly/></div><label className="field brand-area"><span>Parole / argomenti da evitare</span><textarea readOnly placeholder="Inserisci parole, temi o formule che l'AI non dovrà utilizzare..."/></label><div className="usage-card"><Sparkles/><div><b>Utilizzo AI</b><span>Generazioni questo mese</span></div><strong>24 <small>/ demo</small></strong></div></section>
+}
+
+function AccountSettings({form}){
+ return <section className="panel account-settings"><span className="pill purple">ACCOUNT</span><h2>Profilo e fatturazione</h2><p>Dati predisposti per la futura registrazione reale e i pagamenti.</p><div className="brand-form"><Field label="Nome" value={form.name||""} readOnly/><Field label="Cognome" value={form.surname||""} readOnly/><Field label="Email" value={form.email||""} readOnly/><Field label="Tipo account" value={form.type||""} readOnly/><Field label="Ragione sociale / Nome attività" value={form.business||""} readOnly/><Field label="Partita IVA" placeholder="Da configurare" readOnly/></div><div className="billing-data"><FileCheck2/><div><b>Dati di fatturazione</b><span>Indirizzo, codice fiscale/P.IVA, SDI/PEC e altri dati saranno salvati quando collegheremo il backend.</span></div></div></section>
+}
 
 function BillingView(){
  const [annual,setAnnual]=useState(false);
@@ -193,6 +222,7 @@ function BillingView(){
     <button><div className="pay-icon stripe"><CreditCard/></div><div><b>Stripe</b><span>Carta di credito/debito e pagamenti ricorrenti</span></div><ArrowUpRight/></button>
     <button><div className="pay-icon paypal"><WalletCards/></div><div><b>PayPal</b><span>Abbonamento ricorrente tramite account PayPal</span></div><ArrowUpRight/></button>
    </div>
+   <div className="api-cost-note"><Bot/><div><b>Costi AI non inclusi</b><span>I piani utilizzano le API key personali dell'utente. I costi di OpenAI, Google Gemini e dei modelli video non sono inclusi nell'abbonamento a Gestionale Social.</span></div></div>
    <div className="billing-note"><ReceiptText/><div><b>Fatturazione</b><span>Il prezzo mostrato è al netto IVA. Nella versione reale collegheremo checkout, rinnovi, fatture, upgrade/downgrade e cancellazione.</span></div></div>
   </section>
  </div>
@@ -204,7 +234,7 @@ function SettingsView({form}){
  const [showGemini,setShowGemini]=useState(true);
  return <div className="settings-layout">
   <section className="panel settings-nav"><h2>Impostazioni</h2><button className={tab==="AI"?"active":""} onClick={()=>setTab("AI")}><Bot/> AI & API</button><button className={tab==="Brand"?"active":""} onClick={()=>setTab("Brand")}><Building2/> Profilo Brand</button><button className={tab==="Account"?"active":""} onClick={()=>setTab("Account")}><UserRound/> Account</button></section>
-  {tab!=="AI"?<section className="panel placeholder settings-placeholder"><div className="big-icon"><Settings/></div><h2>{tab==="Brand"?"Profilo Brand":"Account"}</h2><p>Sezione predisposta per i prossimi step.</p></section>:
+  {tab==="Brand"?<BrandSettings form={form}/>:tab==="Account"?<AccountSettings form={form}/>:
   <section className="panel api-settings">
    <span className="pill purple">PROVIDER AI</span><h2>AI & API</h2><p className="settings-intro">Gestionale Social potrà usare la chiave API personale dell'utente. In V4 i collegamenti sono ancora dimostrativi e nessuna credenziale viene salvata.</p>
    <div className="provider-settings-grid">
