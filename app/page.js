@@ -52,13 +52,13 @@ export default function Home(){
 function Welcome({onStart,onLogin,onDemo}){
  return <main className="welcome">
    <div className="welcome-bg one"/><div className="welcome-bg two"/>
-   <div className="welcome-nav"><Logo/><span>V2 • Early preview</span></div>
+   <div className="welcome-nav"><Logo/><div className="welcome-nav-actions"><button className="nav-login" onClick={onLogin}>Accedi</button><button className="nav-register" onClick={onStart}>Registrati</button><span>V7 • Preview</span></div></div>
    <section className="welcome-card">
      <div className="welcome-copy">
        <span className="badge"><Sparkles size={14}/> Il tuo social workspace intelligente</span>
        <h1>Crea. Programma.<br/><em>Fatti notare.</em></h1>
        <p>Un unico spazio per organizzare il tuo brand, creare contenuti con l'AI e preparare la pubblicazione sui tuoi social.</p>
-       <div className="welcome-actions"><button className="primary big" onClick={onStart}>Crea il tuo workspace <ArrowRight size={18}/></button><button className="ghost" onClick={onDemo}>Esplora la demo</button><button className="text-login" onClick={onLogin}>Hai già un account? Accedi</button></div>
+       <div className="welcome-actions"><button className="primary big" onClick={onStart}>Registrati gratis <ArrowRight size={18}/></button><button className="login-main" onClick={onLogin}><LockKeyhole size={17}/> Accedi</button><button className="ghost" onClick={onDemo}>Esplora la demo</button></div>
        <div className="trust"><span><Check/> Onboarding guidato</span><span><Check/> Multi-social</span><span><Check/> AI ready</span></div>
      </div>
      <div className="preview">
