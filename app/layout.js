@@ -3,6 +3,7 @@ import "./rippy-hero-fix.css";
 import RippyAssistant from "../components/RippyAssistant";
 import RippyHero from "../components/RippyHero";
 import LaserCursor from "../components/LaserCursor";
+import AccountOnboardingGate from "../components/AccountOnboardingGate";
 
 export const metadata = {
   title: "RP Social — by RP Digital",
@@ -12,7 +13,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="it">
-      <body>{children}<RippyHero/><RippyAssistant/><LaserCursor/></body>
+      <body>{children}<RippyHero/><RippyAssistant/><AccountOnboardingGate/><LaserCursor/></body>
     </html>
   );
 }
