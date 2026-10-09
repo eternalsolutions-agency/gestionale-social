@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./rippy-hero-fix.css";
 import RippyAssistant from "../components/RippyAssistant";
 import RippyHero from "../components/RippyHero";
 
