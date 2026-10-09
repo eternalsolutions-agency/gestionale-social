@@ -4,6 +4,7 @@ import RippyAssistant from "../components/RippyAssistant";
 import RippyHero from "../components/RippyHero";
 import LaserCursor from "../components/LaserCursor";
 import AccountOnboardingGate from "../components/AccountOnboardingGate";
+import AnalysisGate from "../components/AnalysisGate";
 
 export const metadata = {
   title: "RP Social — by RP Digital",
@@ -13,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="it">
-      <body>{children}<RippyHero/><RippyAssistant/><AccountOnboardingGate/><LaserCursor/></body>
+      <body>{children}<RippyHero/><RippyAssistant/><AccountOnboardingGate/><AnalysisGate/><LaserCursor/></body>
     </html>
   );
 }
