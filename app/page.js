@@ -1,283 +1,36 @@
 "use client";
+import {useEffect,useState} from "react";
+import {ArrowRight,BarChart3,BookOpen,CalendarDays,Check,ChevronRight,FileText,Globe2,Instagram,LayoutDashboard,Library,Link2,LogOut,Menu,PenTool,Play,Plus,Search,Send,Settings,Share2,Sparkles,Target,TrendingUp,Video,WandSparkles,X,Zap} from "lucide-react";
 
-import { useEffect, useState } from "react";
-import {
-  LayoutDashboard, Sparkles, CalendarDays, Library, Share2, Settings, Bell, Search,
-  Plus, Instagram, Facebook, Linkedin, Video, Clock3, TrendingUp, WandSparkles,
-  ChevronRight, Image as ImageIcon, Film, Layers3, Menu, X, ArrowRight, ArrowLeft,
-  Building2, Laptop, BriefcaseBusiness, Globe2, Check, KeyRound, UserRound, LogOut, Save, Send, FileText, Smile, Target, ExternalLink, BookOpen, Copy, Trash2, CreditCard, WalletCards, BadgeEuro, CircleDollarSign, Bot, Clapperboard, Crown, ReceiptText, ArrowUpRight, HelpCircle, ShieldCheck, PlugZap, RefreshCw, Scissors, AlignLeft, Hash, MessageSquareText, Eye, EyeOff, LockKeyhole, Mail, Phone, Building, FileCheck2
-} from "lucide-react";
-
-const nav = [
-  ["Dashboard", LayoutDashboard], ["Content Studio", Sparkles], ["Calendario", CalendarDays],
-  ["Libreria", Library], ["Social", Share2], ["Stato collegamenti", PlugZap], ["Piani & Fatturazione", CreditCard], ["Assistenza", HelpCircle], ["Impostazioni", Settings],
-];
-
-const socials = [
-  {name:"Instagram",icon:Instagram,cls:"ig"},{name:"Facebook",icon:Facebook,cls:"fb"},
-  {name:"LinkedIn",icon:Linkedin,cls:"li"},{name:"TikTok",icon:Video,cls:"tk"}
+const menu=[["Dashboard",LayoutDashboard],["Analisi",BarChart3],["Idee & Script",BookOpen],["Crea contenuti",Sparkles],["Calendario",CalendarDays],["Libreria",Library],["Social collegati",Share2],["Impostazioni",Settings]];
+const scripts=[
+ {type:"REEL",title:"3 errori che il tuo cliente sta facendo",desc:"Hook forte → errori → soluzione → CTA",tag:"Educativo"},
+ {type:"CAROSELLO",title:"La checklist definitiva",desc:"Problema → 5 punti pratici → salvataggio",tag:"Valore"},
+ {type:"REEL",title:"Prima pensavo... oggi invece...",desc:"Storytelling → svolta → insegnamento",tag:"Storytelling"},
+ {type:"POST",title:"Mito vs realtà",desc:"Credenza comune → verità → spiegazione",tag:"Autorità"},
+ {type:"STORIES",title:"Sondaggio che genera conversazioni",desc:"Domanda → opzioni → follow-up → CTA",tag:"Engagement"},
+ {type:"REEL",title:"Se fai questo, fermati",desc:"Pattern interrupt → problema → consiglio",tag:"Hook"}
 ];
 
 export default function Home(){
-  const [mode,setMode]=useState("welcome");
-  const [authMode,setAuthMode]=useState("register");
-  const [login,setLogin]=useState({email:"",password:"",error:""});
-  const [step,setStep]=useState(1);
-  const [active,setActive]=useState("Dashboard");
-  const [mobile,setMobile]=useState(false);
-  const [contents,setContents]=useState([]);
-  const [studio,setStudio]=useState({format:"Post",channels:["Instagram"],topic:"",goal:"Informare",tone:"Professionale",provider:"OpenAI",videoProvider:"Google AI Video",result:""});
-  const [form,setForm]=useState({name:"",surname:"",email:"",password:"",type:"",business:"",sector:"",description:"",website:"",socialUrl:"",api:"",socials:[]});
-  useEffect(()=>{
-    try{
-      const session=localStorage.getItem("gs_session");
-      const saved=JSON.parse(localStorage.getItem("gs_user")||"null");
-      const savedContents=JSON.parse(localStorage.getItem("gs_contents")||"[]");
-      if(savedContents.length)setContents(savedContents);
-      if(session&&saved){setForm(saved);setMode("app");}
-    }catch(e){}
-  },[]);
-  useEffect(()=>{try{localStorage.setItem("gs_contents",JSON.stringify(contents))}catch(e){}},[contents]);
-
-  const update=(k,v)=>setForm({...form,[k]:v});
-  const toggleSocial=(n)=>update("socials",form.socials.includes(n)?form.socials.filter(x=>x!==n):[...form.socials,n]);
-
-  if(mode==="welcome") return <Welcome onStart={()=>{setAuthMode("register");setMode("onboarding")}} onLogin={()=>{setAuthMode("login");setMode("login")}} onDemo={()=>setMode("app")}/>;
-  if(mode==="login") return <LoginScreen login={login} setLogin={setLogin} back={()=>setMode("welcome")} register={()=>{setAuthMode("register");setMode("onboarding")}} success={(saved)=>{setForm(saved);localStorage.setItem("gs_session","active");setMode("app")}}/>;
-  if(mode==="onboarding") return <Onboarding step={step} setStep={setStep} form={form} update={update} toggleSocial={toggleSocial} finish={()=>{try{localStorage.setItem("gs_user",JSON.stringify(form));localStorage.setItem("gs_session","active")}catch(e){}setMode("app")}}/>;
-
-  return <Dashboard active={active} setActive={setActive} mobile={mobile} setMobile={setMobile} form={form} contents={contents} setContents={setContents} studio={studio} setStudio={setStudio} logout={()=>{try{localStorage.removeItem("gs_session")}catch(e){}setMode("welcome");setStep(1)}}/>;
+ const [mode,setMode]=useState("welcome"),[active,setActive]=useState("Dashboard"),[mobile,setMobile]=useState(false),[url,setUrl]=useState(""),[business,setBusiness]=useState(""),[analysis,setAnalysis]=useState(false);
+ useEffect(()=>{try{if(localStorage.getItem("rps_session"))setMode("app")}catch(e){}},[]);
+ const enter=()=>{try{localStorage.setItem("rps_session","demo")}catch(e){}setMode("app")};
+ const logout=()=>{try{localStorage.removeItem("rps_session")}catch(e){}setMode("welcome")};
+ if(mode==="welcome")return <Landing enter={enter}/>;
+ return <main className="app"><Sidebar active={active} setActive={setActive} mobile={mobile} setMobile={setMobile} logout={logout}/><section className="main"><Topbar setMobile={setMobile}/><div className="page">{active==="Dashboard"&&<Dashboard setActive={setActive}/>} {active==="Analisi"&&<Analysis url={url} setUrl={setUrl} business={business} setBusiness={setBusiness} analysis={analysis} setAnalysis={setAnalysis} setActive={setActive}/>} {active==="Idee & Script"&&<Scripts/>} {active==="Crea contenuti"&&<Creator/>} {active==="Calendario"&&<Calendar/>} {active==="Libreria"&&<Empty icon={Library} title="La tua libreria" text="Qui troverai bozze, script e contenuti salvati."/>} {active==="Social collegati"&&<Empty icon={Share2} title="Collega i tuoi social" text="Instagram, Facebook, LinkedIn e TikTok saranno gestiti da qui."/>} {active==="Impostazioni"&&<Empty icon={Settings} title="Impostazioni RP Social" text="Profilo attività, Brand Voice, account e abbonamento."/>}</div></section></main>;
 }
 
-function Welcome({onStart,onLogin,onDemo}){
- return <main className="welcome">
-   <div className="welcome-bg one"/><div className="welcome-bg two"/>
-   <div className="welcome-nav"><Logo/><div className="welcome-nav-actions"><button className="nav-login" onClick={onLogin}>Accedi</button><button className="nav-register" onClick={onStart}>Registrati</button><span>V7 • Preview</span></div></div>
-   <section className="welcome-card">
-     <div className="welcome-copy">
-       <span className="badge"><Sparkles size={14}/> Il tuo social workspace intelligente</span>
-       <h1>Crea. Programma.<br/><em>Fatti notare.</em></h1>
-       <p>Un unico spazio per organizzare il tuo brand, creare contenuti con l'AI e preparare la pubblicazione sui tuoi social.</p>
-       <div className="welcome-actions"><button className="primary big" onClick={onStart}>Registrati gratis <ArrowRight size={18}/></button><button className="login-main" onClick={onLogin}><LockKeyhole size={17}/> Accedi</button><button className="ghost" onClick={onDemo}>Esplora la demo</button></div>
-       <div className="trust"><span><Check/> Onboarding guidato</span><span><Check/> Multi-social</span><span><Check/> AI ready</span></div>
-     </div>
-     <div className="preview">
-       <div className="preview-top"><i/><i/><i/><span>gestionale-social</span></div>
-       <div className="preview-body">
-         <div className="preview-side"><b>GS</b>{[1,2,3,4,5].map(x=><i key={x}/>)}</div>
-         <div className="preview-main"><small>DASHBOARD</small><h3>Buon pomeriggio 👋</h3><div className="mini-stats"><i/><i/><i/></div><div className="mini-chart"><span/><span/><span/><span/><span/><span/><span/></div></div>
-       </div>
-     </div>
-   </section><LegalFooter/>
- </main>
-}
-
-
-function LoginScreen({login,setLogin,back,register,success}){
- const submit=()=>{
-  try{
-   const saved=JSON.parse(localStorage.getItem("gs_user")||"null");
-   if(!saved){setLogin({...login,error:"Nessun account salvato su questo dispositivo. Registrati prima."});return}
-   if(saved.email!==login.email||saved.password!==login.password){setLogin({...login,error:"Email o password non corrispondono."});return}
-   success(saved);
-  }catch(e){setLogin({...login,error:"Impossibile leggere i dati locali."})}
- };
- return <main className="login-page"><div className="login-top"><button className="home-back" onClick={back}><ArrowLeft/> Torna all'inizio</button><Logo/></div><section className="login-card"><span className="pill purple">ACCESSO V7</span><h1>Bentornato.</h1><p>Accedi al workspace salvato su questo dispositivo.</p><div className="form-stack"><Field icon={Mail} label="Email" placeholder="nome@email.it" value={login.email} onChange={e=>setLogin({...login,email:e.target.value,error:""})}/><Field icon={LockKeyhole} label="Password" type="password" placeholder="••••••••" value={login.password} onChange={e=>setLogin({...login,password:e.target.value,error:""})}/></div>{login.error&&<div className="login-error">{login.error}</div>}<button className="primary login-submit" onClick={submit}>Accedi <ArrowRight/></button><button className="recover">Password dimenticata? <span>Funzione predisposta</span></button><div className="register-link">Non hai ancora un account? <button onClick={register}>Registrati</button></div><div className="local-warning"><ShieldCheck/><span><b>V7 — prototipo persistente locale</b>I dati vengono conservati nel browser di questo dispositivo. Non è ancora un sistema di autenticazione adatto alla produzione.</span></div></section><LegalFooter/></main>
-}
-function Logo(){return <div className="brand logo-dark"><div className="brand-mark"><Sparkles size={22}/></div><div><strong>gestionale</strong><span>social</span></div></div>}
-
-function Onboarding({step,setStep,form,update,toggleSocial,finish}){
- const total=6;
- const next=()=>step<total?setStep(step+1):finish();
- return <main className="onboarding">
-   <div className="onboard-top"><Logo/><div className="progress-wrap"><span>Configurazione {step} di {total}</span><div className="progress"><i style={{width:`${step/total*100}%`}}/></div></div></div>
-   <section className="onboard-shell">
-     <div className="step-label">STEP {String(step).padStart(2,"0")}</div>
-     {step===1&&<Step1 form={form} update={update}/>}
-     {step===2&&<Step2 form={form} update={update}/>}
-     {step===3&&<Step3 form={form} update={update}/>}
-     {step===4&&<Step4 form={form} update={update}/>}
-     {step===5&&<Step5 form={form} update={update}/>}
-     {step===6&&<Step6 form={form} toggleSocial={toggleSocial}/>}
-     <div className="onboard-actions">{step>1?<button className="back" onClick={()=>setStep(step-1)}><ArrowLeft/> Indietro</button>:<span/>}<button className="primary big" onClick={next}>{step===total?"Entra nella dashboard":"Continua"} <ArrowRight/></button></div>
-   </section>
-   <p className="demo-note">Versione dimostrativa: i dati inseriti non vengono salvati su un database.</p>
- </main>
-}
-
-const Field=({label,icon:Icon,...props})=><label className="field"><span>{label}</span><div>{Icon&&<Icon size={18}/>}<input {...props}/></div></label>;
-
-function Step1({form,update}){return <div className="step-content"><div className="step-icon"><UserRound/></div><h1>Iniziamo da te.</h1><p>Crea il profilo che utilizzerai per accedere al tuo workspace.</p><div className="form-grid"><Field label="Nome" placeholder="Mario" value={form.name} onChange={e=>update("name",e.target.value)}/><Field label="Cognome" placeholder="Rossi" value={form.surname} onChange={e=>update("surname",e.target.value)}/><Field label="Email" placeholder="nome@email.it" value={form.email} onChange={e=>update("email",e.target.value)}/><Field label="Password" type="password" placeholder="••••••••" value={form.password} onChange={e=>update("password",e.target.value)}/></div><div className="consents"><label><input type="checkbox"/> <span>Accetto <b>Termini e Condizioni</b> e <b>Privacy Policy</b></span></label><label><input type="checkbox"/> <span>Desidero ricevere aggiornamenti e comunicazioni commerciali (facoltativo)</span></label></div><button className="forgot-demo"><LockKeyhole/> Hai già un account? Accesso e recupero password saranno attivati con il backend.</button></div>}
-function Step2({form,update}){let opts=[["Azienda",Building2,"Team, società o brand"],["Freelance",Laptop,"Lavori in autonomia"],["Libero professionista",BriefcaseBusiness,"Studio o attività professionale"]];return <div className="step-content"><div className="step-icon"><BriefcaseBusiness/></div><h1>Come lavori?</h1><p>Ci aiuterà a personalizzare l'esperienza e i contenuti.</p><div className="choice-grid">{opts.map(([n,I,d])=><button key={n} className={"choice "+(form.type===n?"selected":"")} onClick={()=>update("type",n)}><I/><b>{n}</b><span>{d}</span>{form.type===n&&<i><Check/></i>}</button>)}</div></div>}
-function Step3({form,update}){return <div className="step-content"><div className="step-icon"><Building2/></div><h1>Parlaci della tua attività.</h1><p>Queste informazioni diventeranno il primo contesto del tuo brand.</p><div className="form-stack"><Field label="Nome attività / Brand" placeholder="Es. Studio Rossi" value={form.business} onChange={e=>update("business",e.target.value)}/><Field label="Settore" placeholder="Es. Marketing, ristorazione, consulenza..." value={form.sector} onChange={e=>update("sector",e.target.value)}/><label className="field"><span>Descrizione breve</span><textarea placeholder="Racconta in poche righe cosa fai e a chi ti rivolgi..." value={form.description} onChange={e=>update("description",e.target.value)}/></label></div></div>}
-function Step4({form,update}){return <div className="step-content"><div className="step-icon"><Globe2/></div><h1>Dove possiamo conoscerti?</h1><p>Inserisci il tuo sito oppure una pagina social. In futuro l'AI potrà usarli per comprendere meglio il brand.</p><div className="form-stack"><Field icon={Globe2} label="Sito web" placeholder="https://www.tuosito.it" value={form.website} onChange={e=>update("website",e.target.value)}/><Field icon={Share2} label="Pagina social principale" placeholder="https://instagram.com/..." value={form.socialUrl} onChange={e=>update("socialUrl",e.target.value)}/></div><div className="info-box">💡 Puoi compilare anche uno solo dei due campi.</div></div>}
-function Step5({form,update}){return <div className="step-content"><div className="step-icon"><KeyRound/></div><h1>Prepara il tuo assistente AI.</h1><p>Predisponiamo il collegamento a OpenAI. In questa V2 la chiave rimane solo nell'interfaccia demo e non viene memorizzata.</p><div className="form-stack"><Field icon={KeyRound} label="OpenAI API Key" type="password" placeholder="sk-..." value={form.api} onChange={e=>update("api",e.target.value)}/></div><div className="security-box"><b>🔐 Nota sulla sicurezza</b><span>Nella versione definitiva le chiavi API non saranno mai esposte pubblicamente nel browser e verranno gestite lato server.</span></div></div>}
-function Step6({form,toggleSocial}){return <div className="step-content"><div className="step-icon"><Share2/></div><h1>Scegli i tuoi canali.</h1><p>Seleziona i social che vorresti gestire. I collegamenti OAuth reali arriveranno negli step successivi.</p><div className="social-choice">{socials.map(s=>{let I=s.icon,sel=form.socials.includes(s.name);return <button key={s.name} className={sel?"selected":""} onClick={()=>toggleSocial(s.name)}><div className={"social-icon "+s.cls}><I/></div><b>{s.name}</b><span>{sel?<><Check/> Selezionato</>:"Seleziona"}</span></button>})}</div></div>}
-
-function Dashboard({active,setActive,mobile,setMobile,form,contents,setContents,studio,setStudio,logout}){
- const name=form.name||"Mario", business=form.business||"Il tuo workspace";
- return <main className="app-shell">
-  <aside className={"sidebar "+(mobile?"open":"")}><div className="brand"><div className="brand-mark"><Sparkles size={22}/></div><div><strong>gestionale</strong><span>social</span></div><button className="close" onClick={()=>setMobile(false)}><X/></button></div>
-   <div className="workspace"><div className="avatar">{(name[0]||"U").toUpperCase()}</div><div><b>{business}</b><small>{form.type||"Account Business"} <em className="plan-mini">PRO</em></small></div></div>
-   <nav>{nav.map(([label,Icon])=><button key={label} className={active===label?"active":""} onClick={()=>{setActive(label);setMobile(false)}}><Icon size={19}/><span>{label}</span></button>)}</nav>
-   <div className="upgrade"><div className="mini-spark"><WandSparkles size={18}/></div><b>Workspace AI</b><p>La base è pronta per automazioni e collegamenti reali.</p><button onClick={logout}><LogOut size={13}/> Torna all'accesso</button></div>
-  </aside>
-  <section className="content"><header><button className="hamb" onClick={()=>setMobile(true)}><Menu/></button><div className="search"><Search size={18}/><input placeholder="Cerca contenuti, campagne..."/></div><div className="header-actions"><button className="icon-btn"><Bell size={19}/><i/></button><div className="avatar small">{name[0].toUpperCase()}</div></div></header>
-  <div className="page"><div className="hero"><div><span className="eyebrow">WORKSPACE / {active.toUpperCase()}</span><h1>{active==="Dashboard"?`Ciao ${name} 👋`:active}</h1><p>{active==="Dashboard"?"Il tuo spazio di lavoro è pronto. Inizia a organizzare i contenuti del brand.":"Sezione predisposta per i prossimi step di sviluppo."}</p></div><button className="primary"><Plus size={18}/> Crea contenuto</button></div>
-  {active==="Dashboard"?<DashboardHome form={form}/>:
-    active==="Content Studio"?<ContentStudio studio={studio} setStudio={setStudio} contents={contents} setContents={setContents}/>:
-    active==="Libreria"?<LibraryView contents={contents} setContents={setContents}/>:
-    active==="Stato collegamenti"?<ConnectionsView/>:
-    active==="Piani & Fatturazione"?<BillingView/>:
-    active==="Assistenza"?<SupportView/>:
-    active==="Impostazioni"?<SettingsView form={form}/>:
-    <Placeholder active={active}/>}</div><LegalFooter compact/></section>
- </main>
-}
-
-function DashboardHome({form}){
- const selected=form.socials.length||2;
- const scheduled=[["18","AGO","5 idee per migliorare la presenza online","Instagram","10:30","Carosello"],["20","AGO","Dietro le quinte del nostro lavoro","Facebook","18:00","Post"],["22","AGO","3 errori da evitare sui social","Instagram","12:00","Reel"]];
- return <><div className="stats"><Stat icon={CalendarDays} value="8" label="Contenuti programmati" note="+3 questa settimana"/><Stat icon={Share2} value={`${selected}/4`} label="Social selezionati" note="Configurazione iniziale"/><Stat icon={Sparkles} value="24" label="Contenuti AI creati" note="Demo workspace"/><Stat icon={TrendingUp} value="+18%" label="Attività" note="vs. mese scorso"/></div>
- <div className="grid-main"><section className="panel"><div className="panel-head"><div><h2>Prossimi contenuti</h2><p>La tua programmazione editoriale</p></div><button className="link">Vedi calendario <ChevronRight size={16}/></button></div><div className="schedule-list">{scheduled.map((s,i)=><div className="schedule" key={i}><div className="date"><b>{s[0]}</b><span>{s[1]}</span></div><div className="sched-info"><b>{s[2]}</b><div><span>{s[3]}</span><span><Clock3 size={14}/>{s[4]}</span><span>{s[5]}</span></div></div><button className="dots">•••</button></div>)}</div></section>
- <section className="panel ai-card"><div className="ai-orb"><Sparkles/></div><span className="pill">AI CONTENT ASSISTANT</span><h2>Che cosa vuoi pubblicare oggi?</h2><p>Descrivi un argomento e prepara il contenuto per i tuoi social.</p><div className="prompt"><textarea placeholder="Es. Crea un post per promuovere il mio nuovo servizio..."/><button><WandSparkles size={17}/> Genera</button></div><div className="quick"><button>💡 Dammi 5 idee</button><button>📅 Piano editoriale</button></div></section></div>
- <div className="bottom-grid"><section className="panel"><div className="panel-head"><div><h2>I tuoi canali</h2><p>Canali scelti durante l'onboarding</p></div><button className="link">Gestisci <ChevronRight size={16}/></button></div><div className="social-grid">{socials.map(s=>{let I=s.icon,on=form.socials.length?form.socials.includes(s.name):["Instagram","Facebook"].includes(s.name);return <div className="social-card" key={s.name}><div className={"social-icon "+s.cls}><I size={22}/></div><div><b>{s.name}</b><small className={on?"connected":""}>{on?"Selezionato":"Da collegare"}</small></div><span className={on?"dot ok":"dot"}/></div>})}</div></section>
- <section className="panel"><div className="panel-head"><div><h2>Crea rapidamente</h2><p>Scegli il formato</p></div></div><div className="create-grid"><button><ImageIcon/><span><b>Post</b><small>Immagine + copy</small></span></button><button><Layers3/><span><b>Carosello</b><small>Più slide</small></span></button><button><Film/><span><b>Reel</b><small>Video verticale</small></span></button><button><Sparkles/><span><b>Storia</b><small>Contenuto rapido</small></span></button></div></section></div></>
-}
-
-function ContentStudio({studio,setStudio,contents,setContents}){
- const formats=[["Post",ImageIcon],["Carosello",Layers3],["Reel / Video",Film],["Storia",Sparkles]];
- const toggle=(n)=>setStudio({...studio,channels:studio.channels.includes(n)?studio.channels.filter(x=>x!==n):[...studio.channels,n]});
- const generate=()=>{
-  const topic=studio.topic.trim()||"il tuo prossimo contenuto";
-  const base=studio.format==="Carosello"
-   ? `SLIDE 1 — ${topic}\n\nSLIDE 2 — Il problema\nSpiega in modo semplice perché questo tema è importante per il tuo pubblico.\n\nSLIDE 3 — Il valore\nMostra una soluzione concreta e utile.\n\nSLIDE 4 — Il consiglio\nAggiungi un suggerimento pratico che l'utente può applicare subito.\n\nSLIDE 5 — CTA\nVuoi saperne di più? Scrivici o salva questo carosello.`
-   : studio.format==="Reel / Video"
-   ? `HOOK\n“Se ti occupi di ${topic}, fermati 30 secondi.”\n\nSCENA 1\nPresenta il problema in modo diretto.\n\nSCENA 2\nMostra il vantaggio o la soluzione.\n\nSCENA 3\nAggiungi un esempio concreto.\n\nCTA\n“Seguici per altri contenuti come questo.”`
-   : studio.format==="Storia"
-   ? `STORIA 1\n👋 Oggi parliamo di ${topic}.\n\nSTORIA 2\nUna cosa importante da sapere: comunica un beneficio concreto.\n\nSTORIA 3\n💬 Vuoi approfondire? Rispondi a questa storia.`
-   : `✨ ${topic}\n\nUna comunicazione efficace parte da un messaggio semplice: capire il bisogno del pubblico e trasformarlo in valore concreto.\n\nRacconta cosa rende la tua attività diversa, mostra un beneficio reale e invita le persone a fare il passo successivo.\n\n👉 Vuoi saperne di più? Contattaci.\n\n#socialmedia #business #comunicazione`;
-  setStudio({...studio,result:base});
- };
- const save=()=>{if(!studio.result)return;setContents([{id:Date.now(),title:studio.topic||"Contenuto senza titolo",format:studio.format,channels:studio.channels,text:studio.result,status:"Bozza"},...contents])};
- return <div className="studio-layout">
-  <section className="panel studio-builder">
-   <div className="panel-head"><div><h2>Content Studio</h2><p>Configura il contenuto che vuoi creare</p></div><span className="pill purple">AI DEMO</span></div>
-   <label className="studio-label">1. Formato</label><div className="format-grid">{formats.map(([n,I])=><button className={studio.format===n?"selected":""} key={n} onClick={()=>setStudio({...studio,format:n})}><I/><b>{n}</b></button>)}</div>
-   <label className="studio-label">2. Canali</label><div className="channel-row">{socials.map(x=>{let I=x.icon,on=studio.channels.includes(x.name);return <button className={on?"selected":""} key={x.name} onClick={()=>toggle(x.name)}><I/><span>{x.name}</span>{on&&<Check/>}</button>})}</div>
-   <label className="studio-label">3. Motore AI</label>
-   <div className="provider-grid">
-    <button className={studio.provider==="OpenAI"?"selected":""} onClick={()=>setStudio({...studio,provider:"OpenAI"})}><Bot/><div><b>OpenAI</b><span>Testi, idee e copy</span></div></button>
-    <button className={studio.provider==="Gemini"?"selected":""} onClick={()=>setStudio({...studio,provider:"Gemini"})}><Sparkles/><div><b>Google Gemini</b><span>Testi e contenuti multimodali</span></div></button>
-   </div>
-   {(studio.format==="Reel / Video"||studio.format==="Storia")&&<div className="video-provider"><Clapperboard/><div><b>Video AI</b><span>{studio.videoProvider} • predisposto per Veo</span></div><select value={studio.videoProvider} onChange={e=>setStudio({...studio,videoProvider:e.target.value})}><option>Google AI Video</option></select></div>}
-   <label className="studio-label">4. Di cosa vuoi parlare?</label><textarea className="topic" placeholder="Es. Voglio promuovere il nuovo servizio di consulenza per piccole attività..." value={studio.topic} onChange={e=>setStudio({...studio,topic:e.target.value})}/>
-   <div className="studio-selects"><label><span>Obiettivo</span><select value={studio.goal} onChange={e=>setStudio({...studio,goal:e.target.value})}><option>Informare</option><option>Vendere</option><option>Engagement</option><option>Brand awareness</option></select></label><label><span>Tono</span><select value={studio.tone} onChange={e=>setStudio({...studio,tone:e.target.value})}><option>Professionale</option><option>Amichevole</option><option>Diretto</option><option>Creativo</option><option>Ispirazionale</option></select></label></div>
-   <button className="primary generate-btn" onClick={generate}><WandSparkles/> Genera contenuto</button>
-  </section>
-  <section className="panel studio-output">
-   <div className="panel-head"><div><h2>Anteprima</h2><p>Il risultato diventerà modificabile</p></div>{studio.result&&<button className="copy-btn" onClick={()=>navigator.clipboard?.writeText(studio.result)}><Copy/> Copia</button>}</div>
-   {!studio.result?<div className="empty-output"><div><Sparkles/></div><h3>Il contenuto apparirà qui</h3><p>Configura le opzioni a sinistra e premi “Genera contenuto”.</p></div>:<>
-    <div className="output-meta"><span>{studio.format}</span><span>{studio.provider}</span>{studio.channels.map(c=><span key={c}>{c}</span>)}</div>
-    <textarea className="result-editor" value={studio.result} onChange={e=>setStudio({...studio,result:e.target.value})}/>
-    <div className="ai-tools"><button onClick={generate}><RefreshCw/> Rigenera</button><button><MessageSquareText/> Migliora</button><button><Scissors/> Accorcia</button><button><AlignLeft/> Allunga</button><button><Sparkles/> Cambia tono</button><button><Hash/> Hashtag</button></div>
-    <div className="result-actions"><button className="secondary" onClick={save}><Save/> Salva in Libreria</button><button className="primary"><CalendarDays/> Programma</button></div>
-   </>}
-  </section>
- </div>
-}
-
-function LibraryView({contents,setContents}){
- return <section className="panel library-panel"><div className="panel-head"><div><h2>Libreria contenuti</h2><p>Le bozze create durante questa sessione</p></div><span className="counter">{contents.length} contenuti</span></div>
- {!contents.length?<div className="library-empty"><Library/><h3>La libreria è vuota</h3><p>Crea un contenuto dal Content Studio e salvalo come bozza.</p></div>:
- <div className="library-list">{contents.map(c=><article key={c.id}><div className="library-type"><FileText/></div><div className="library-copy"><div><b>{c.title}</b><span>{c.format} • {c.channels.join(", ")}</span></div><p>{c.text.slice(0,150)}{c.text.length>150?"...":""}</p></div><span className="draft">{c.status}</span><button className="trash" onClick={()=>setContents(contents.filter(x=>x.id!==c.id))}><Trash2/></button></article>)}</div>}</section>
-}
-
-
-
-function LegalFooter({compact=false}){
- return <footer className={"legal-footer "+(compact?"compact":"")}><span>© 2026 Gestionale Social — Proprietà di <b>rpdigital.it</b> — P. IVA 01242270575</span><nav><button>Privacy Policy</button><button>Cookie Policy</button><button>Termini e Condizioni</button></nav></footer>
-}
-
-function ConnectionsView(){
- const items=[
-  ["OpenAI","AI",Bot,"Da configurare"],["Google Gemini","AI",Sparkles,"Da configurare"],["Google AI Video / Veo","Video",Clapperboard,"Da configurare"],
-  ["Facebook","Social",Facebook,"Demo"],["Instagram","Social",Instagram,"Demo"],["LinkedIn","Social",Linkedin,"Da configurare"],["TikTok","Social",Video,"Da configurare"],
-  ["Stripe","Pagamenti",CreditCard,"Non collegato"],["PayPal","Pagamenti",WalletCards,"Non collegato"]
- ];
- return <section className="panel connections"><div className="panel-head"><div><h2>Stato collegamenti</h2><p>Una vista unica di servizi AI, social e pagamenti</p></div><span className="status-demo">V7 • PERSISTENZA LOCALE</span></div><div className="connections-grid">{items.map(([n,t,I,st])=><article key={n}><div className="connection-icon"><I/></div><div><b>{n}</b><span>{t}</span></div><em className={st==="Demo"?"conn-demo":"conn-off"}>{st}</em></article>)}</div></section>
-}
-
-function SupportView(){
- return <div className="support-grid"><section className="panel support-main"><span className="pill purple">ASSISTENZA</span><h2>Come possiamo aiutarti?</h2><p>Area predisposta per supporto, documentazione e domande frequenti.</p><div className="faq-list">{["Come collego OpenAI o Gemini?","Come funzionano i piani?","Come collegherò i miei social?","Dove trovo i contenuti salvati?"].map((x,i)=><button key={x}><span><b>{String(i+1).padStart(2,"0")}</b>{x}</span><ChevronRight/></button>)}</div></section><section className="panel contact-support"><div className="big-support"><HelpCircle/></div><h3>Hai bisogno di assistenza?</h3><p>Il canale di supporto ufficiale verrà collegato a rpdigital.it prima del lancio.</p><button className="secondary"><Globe2/> rpdigital.it</button></section></div>
-}
-
-function BrandSettings({form}){
- return <section className="panel brand-settings"><span className="pill purple">BRAND VOICE</span><h2>Profilo del Brand</h2><p>Queste informazioni aiuteranno l'AI a creare contenuti meno generici e più coerenti.</p><div className="profile-summary"><div><Building2/></div><section><b>{form.business||"Nome attività"}</b><span>{form.sector||"Settore non specificato"}</span></section></div><div className="brand-form"><Field label="Nome attività / Ragione sociale" value={form.business||""} readOnly placeholder="Nome attività"/><Field label="Sito web" value={form.website||""} readOnly placeholder="https://..."/><Field label="Partita IVA" placeholder="Inserisci P. IVA" readOnly/><Field label="Pubblico principale" placeholder="Es. PMI, professionisti, famiglie..." readOnly/><Field label="Tono del brand" placeholder="Professionale, diretto, amichevole..." readOnly/><Field label="CTA preferita" placeholder="Es. Richiedi informazioni" readOnly/></div><label className="field brand-area"><span>Parole / argomenti da evitare</span><textarea readOnly placeholder="Inserisci parole, temi o formule che l'AI non dovrà utilizzare..."/></label><div className="usage-card"><Sparkles/><div><b>Utilizzo AI</b><span>Generazioni questo mese</span></div><strong>24 <small>/ demo</small></strong></div></section>
-}
-
-function AccountSettings({form}){
- return <section className="panel account-settings"><span className="pill purple">ACCOUNT</span><h2>Profilo e fatturazione</h2><p>I dati dell’account V7 vengono mantenuti localmente sul dispositivo fino al collegamento del database.</p><div className="brand-form"><Field label="Nome" value={form.name||""} readOnly/><Field label="Cognome" value={form.surname||""} readOnly/><Field label="Email" value={form.email||""} readOnly/><Field label="Tipo account" value={form.type||""} readOnly/><Field label="Ragione sociale / Nome attività" value={form.business||""} readOnly/><Field label="Partita IVA" placeholder="Da configurare" readOnly/></div><div className="billing-data"><FileCheck2/><div><b>Dati di fatturazione</b><span>Indirizzo, codice fiscale/P.IVA, SDI/PEC e altri dati saranno salvati quando collegheremo il backend.</span></div></div></section>
-}
-
-function BillingView(){
- const [annual,setAnnual]=useState(false);
- const [selected,setSelected]=useState("Pro");
- const plans=[
-  {name:"Start",price:"19,90",annual:"199",desc:"Per freelance e piccole attività",features:["1 brand","2 canali social","Calendario editoriale","Libreria contenuti","AI con API personale","Post e caroselli"],featured:false},
-  {name:"Pro",price:"34,90",annual:"349",desc:"Per chi pubblica con continuità",features:["3 brand","4 canali social","Tutto di Start","Reel e Stories","OpenAI + Gemini","Google AI Video / Veo ready","Piani editoriali AI"],featured:true},
-  {name:"Agency",price:"69,90",annual:"699",desc:"Per agenzie e gestione multi-cliente",features:["10 brand","4 social per brand","Tutto di Pro","Workspace multi-cliente","Gestione team predisposta","Priorità funzionalità","Dashboard avanzata"],featured:false}
- ];
- return <div className="billing-wrap">
-  <section className="billing-hero panel">
-   <div><span className="pill purple">GESTIONALE SOCIAL SaaS</span><h2>Scegli il piano giusto per il tuo lavoro</h2><p>I pagamenti reali verranno collegati successivamente. La V4 mostra già il flusso commerciale completo.</p></div>
-   <div className="billing-toggle"><button className={!annual?"active":""} onClick={()=>setAnnual(false)}>Mensile</button><button className={annual?"active":""} onClick={()=>setAnnual(true)}>Annuale <span>2 mesi circa inclusi</span></button></div>
-  </section>
-  <div className="plans-grid">
-   {plans.map(plan=><article className={"plan-card panel "+(plan.featured?"featured":"")} key={plan.name}>
-    {plan.featured&&<div className="popular"><Crown/> PIÙ SCELTO</div>}
-    <div className="plan-top"><div><h3>{plan.name}</h3><p>{plan.desc}</p></div><div className="plan-price"><b>€ {annual?plan.annual:plan.price}</b><span>+ IVA / {annual?"anno":"mese"}</span></div></div>
-    <div className="plan-features">{plan.features.map(f=><span key={f}><Check/> {f}</span>)}</div>
-    <button className={plan.featured?"primary plan-btn":"secondary plan-btn"} onClick={()=>setSelected(plan.name)}>{selected===plan.name?"Piano selezionato":"Scegli "+plan.name}</button>
-   </article>)}
-  </div>
-  <section className="panel payment-panel">
-   <div className="panel-head"><div><h2>Metodo di pagamento</h2><p>Piano selezionato: <b>{selected}</b></p></div><span className="status-demo">DEMO V4</span></div>
-   <div className="payment-grid">
-    <button><div className="pay-icon stripe"><CreditCard/></div><div><b>Stripe</b><span>Carta di credito/debito e pagamenti ricorrenti</span></div><ArrowUpRight/></button>
-    <button><div className="pay-icon paypal"><WalletCards/></div><div><b>PayPal</b><span>Abbonamento ricorrente tramite account PayPal</span></div><ArrowUpRight/></button>
-   </div>
-   <div className="api-cost-note"><Bot/><div><b>Costi AI non inclusi</b><span>I piani utilizzano le API key personali dell'utente. I costi di OpenAI, Google Gemini e dei modelli video non sono inclusi nell'abbonamento a Gestionale Social.</span></div></div>
-   <div className="billing-note"><ReceiptText/><div><b>Fatturazione</b><span>Il prezzo mostrato è al netto IVA. Nella versione reale collegheremo checkout, rinnovi, fatture, upgrade/downgrade e cancellazione.</span></div></div>
-  </section>
- </div>
-}
-
-function SettingsView({form}){
- const [tab,setTab]=useState("AI");
- const [showOpenAI,setShowOpenAI]=useState(true);
- const [showGemini,setShowGemini]=useState(true);
- return <div className="settings-layout">
-  <section className="panel settings-nav"><h2>Impostazioni</h2><button className={tab==="AI"?"active":""} onClick={()=>setTab("AI")}><Bot/> AI & API</button><button className={tab==="Brand"?"active":""} onClick={()=>setTab("Brand")}><Building2/> Profilo Brand</button><button className={tab==="Account"?"active":""} onClick={()=>setTab("Account")}><UserRound/> Account</button></section>
-  {tab==="Brand"?<BrandSettings form={form}/>:tab==="Account"?<AccountSettings form={form}/>:
-  <section className="panel api-settings">
-   <span className="pill purple">PROVIDER AI</span><h2>AI & API</h2><p className="settings-intro">Gestionale Social potrà usare la chiave API personale dell'utente. In V4 i collegamenti sono ancora dimostrativi e nessuna credenziale viene salvata.</p>
-   <div className="provider-settings-grid">
-    <article className="provider-setting-card"><div className="provider-title"><div className="api-status-icon"><Bot/></div><div><b>OpenAI</b><span>Copy, idee, piani editoriali e assistenza contenuti</span></div><span className={form.api?"status-demo":"status-off"}>{form.api?"DEMO":"NON COLLEGATA"}</span></div>
-     <div className="api-field-demo"><label>OpenAI API Key</label><div><input type="password" value={form.api||""} readOnly placeholder="sk-..."/><button>Verifica</button></div></div>
-     <button className="guide-toggle" onClick={()=>setShowOpenAI(!showOpenAI)}><BookOpen/> Guida OpenAI <ChevronRight/></button>
-     {showOpenAI&&<div className="mini-guide"><p><b>1.</b> Accedi alla piattaforma OpenAI.</p><p><b>2.</b> Configura la fatturazione API se richiesta.</p><p><b>3.</b> Crea una Secret API key.</p><p><b>4.</b> In futuro inseriscila qui: mai nel codice GitHub.</p><a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Apri API Keys <ExternalLink/></a></div>}
-    </article>
-    <article className="provider-setting-card"><div className="provider-title"><div className="api-status-icon gemini"><Sparkles/></div><div><b>Google Gemini</b><span>Gemini API + predisposizione Google AI Video / Veo</span></div><span className="status-off">NON COLLEGATA</span></div>
-     <div className="api-field-demo"><label>Gemini API Key</label><div><input type="password" readOnly placeholder="Inserisci la chiave Gemini in futuro"/><button>Verifica</button></div></div>
-     <button className="guide-toggle" onClick={()=>setShowGemini(!showGemini)}><BookOpen/> Guida Gemini / Veo <ChevronRight/></button>
-     {showGemini&&<div className="mini-guide"><p><b>1.</b> Apri Google AI Studio.</p><p><b>2.</b> Crea o visualizza una Gemini API key.</p><p><b>3.</b> Per modelli a pagamento abilita la fatturazione prevista da Google.</p><p><b>4.</b> I modelli video compatibili, come Veo, useranno l'integrazione Google AI.</p><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer">Apri Google AI Studio <ExternalLink/></a></div>}
-    </article>
-   </div>
-   <div className="security-warning"><b>Sicurezza delle chiavi</b><p>Non inserire ancora credenziali reali nella V4. Quando attiveremo le API, le chiamate passeranno dal server e le chiavi non dovranno mai finire nel repository GitHub o nel JavaScript inviato al browser.</p></div>
-  </section>}
- </div>
-}
-
-function Stat({icon:Icon,value,label,note}){return <div className="stat"><div className="stat-icon"><Icon/></div><div><b className="stat-value">{value}</b><span>{label}</span><small>{note}</small></div></div>}
-function Placeholder({active}){let c={"Content Studio":["Crea con l'AI","Post, caroselli, Reel e Stories saranno gestiti da qui."],"Calendario":["Calendario editoriale","Programma e organizza visivamente tutti i contenuti."],"Libreria":["Libreria contenuti","Archivia bozze, immagini, video e contenuti pubblicati."],"Social":["Collega i social","Facebook, Instagram, LinkedIn e TikTok saranno configurabili qui."],"Impostazioni":["Impostazioni account","Profilo, brand, sito web, OpenAI e preferenze."]}[active];return <section className="placeholder panel"><div className="big-icon"><Sparkles/></div><span className="pill">GESTIONALE SOCIAL</span><h2>{c[0]}</h2><p>{c[1]}</p><button className="primary">Sezione predisposta</button></section>}
+function Brand(){return <div className="brand"><div className="rpmark"><b>R</b><b>P</b></div><div><strong>RP <em>SOCIAL</em></strong><small>BY RP DIGITAL</small></div></div>}
+function Landing({enter}){return <main className="landing"><div className="redglow g1"/><div className="redglow g2"/><nav className="landingnav"><Brand/><div className="navlinks"><span>Funzionalità</span><span>Come funziona</span><span>Prezzi</span><span>FAQ</span></div><div className="navactions"><button className="outline" onClick={enter}>Accedi</button><button className="redbtn" onClick={enter}>Registrati</button></div></nav><section className="hero"><div className="herocopy"><div className="kicker">— IL TUO <b>SOCIAL MEDIA MANAGER DIGITALE</b></div><h1>Analizza. Crea.<br/>Organizza. <em>Pubblica.</em></h1><p>Inserisci il tuo sito web o i link dei tuoi social. RP Social analizza la tua presenza online, ti suggerisce cosa migliorare e trasforma la strategia in contenuti pronti.</p><div className="heroactions"><button className="redbtn big" onClick={enter}><Zap/> Inizia gratis <ArrowRight/></button><button className="outline big" onClick={enter}><Play/> Guarda la demo</button></div><div className="ticks"><span><Check/> Analisi automatica</span><span><Check/> Script con AI</span><span><Check/> Calendario editoriale</span></div></div><HeroDashboard/></section><section className="features">{[[Search,"Analisi automatica","Scopri cosa migliorare partendo dal tuo sito o dai social."],[BookOpen,"Idee e script pronti","Un database di strutture già pensate per creare contenuti."],[Sparkles,"Contenuti con AI","Post, Reel, caroselli e Stories personalizzati sul tuo brand."],[CalendarDays,"Calendario editoriale","Organizza e prepara la programmazione dei contenuti."],[TrendingUp,"Più risultati","Una strategia semplice per migliorare la presenza online."]].map(([I,t,d])=><div className="feature" key={t}><I/><b>{t}</b><p>{d}</p></div>)}</section><section className="steps"><div className="kicker">— COME FUNZIONA</div><h2>Dalla tua attività ai contenuti pronti in <em>4 step</em></h2><div className="stepgrid">{[[Link2,"Inserisci sito o social","Partiamo dalla tua presenza online."],[BarChart3,"Ricevi l'analisi","Punti di forza, criticità e piano d'azione."],[FileText,"Ottieni idee e script","Contenuti personalizzati per la tua attività."],[Send,"Crea, organizza e pubblica","Dal contenuto al calendario in pochi clic."]].map(([I,t,d],i)=><div className="step" key={t}><span>{i+1}</span><I/><div><b>{t}</b><p>{d}</p></div></div>)}</div></section><Footer/></main>}
+function HeroDashboard(){return <div className="heroapp"><div className="appbar"><i/><i/><i/><small>RP SOCIAL</small></div><div className="heroin"><aside><b>RP</b>{[1,2,3,4,5,6].map(x=><i key={x}/>)}</aside><div className="dashmock"><small>DASHBOARD</small><h3>Ciao 👋</h3><p>Ecco la panoramica della tua attività</p><div className="mockstats"><div><b>78<small>/100</small></b><span>Social Score</span></div><div><b>24</b><span>Contenuti creati</span></div><div><b>12</b><span>Programmati</span></div></div><div className="mocktitle">Prossimi contenuti</div><div className="mockcards">{["REEL","POST","CAROSELLO","STORY"].map((x,i)=><div key={x}><span>{x}</span><i style={{height:(45+i*13)+"%"}}/></div>)}</div></div></div><div className="float f1"><BarChart3/><b>Analisi automatica</b><span>Social Score 78/100</span></div><div className="float f2"><FileText/><b>Idee & Script AI</b><span>Pronti per la tua attività</span></div><div className="float f3"><CalendarDays/><b>Calendario editoriale</b><span>Organizza e programma</span></div></div>}
+function Sidebar({active,setActive,mobile,setMobile,logout}){return <aside className={"sidebar "+(mobile?"open":"")}><div className="sidehead"><Brand/><button onClick={()=>setMobile(false)}><X/></button></div><div className="workspace"><div>RP</div><span><b>Il tuo workspace</b><small>Piano PRO</small></span></div><nav>{menu.map(([n,I])=><button className={active===n?"active":""} onClick={()=>{setActive(n);setMobile(false)}} key={n}><I/>{n}</button>)}</nav><div className="sidebottom"><div className="upgrade"><Sparkles/><b>RP Social AI</b><p>Strategia e contenuti in un unico spazio.</p></div><button className="logout" onClick={logout}><LogOut/> Esci</button></div></aside>}
+function Topbar({setMobile}){return <header><button className="hamb" onClick={()=>setMobile(true)}><Menu/></button><div className="topsearch"><Search/><span>Cerca in RP Social...</span></div><div className="topright"><span className="plan">PRO</span><div className="avatar">RP</div></div></header>}
+function Dashboard({setActive}){return <><div className="pagehead"><div><span className="eyebrow">RP SOCIAL DASHBOARD</span><h1>Cosa pubblichiamo oggi?</h1><p>Strategia, idee e contenuti pronti per la tua attività.</p></div><button className="redbtn" onClick={()=>setActive("Crea contenuti")}><Plus/> Crea contenuto</button></div><div className="scoregrid"><div className="scorecard"><div className="score"><b>78</b><span>/100</span></div><div><small>SOCIAL SCORE</small><h3>Buona base. Possiamo fare meglio.</h3><p>Completa l'analisi per ricevere un piano personalizzato.</p><button onClick={()=>setActive("Analisi")}>Vedi analisi <ChevronRight/></button></div></div>{[[FileText,"24","Contenuti creati","+6 questa settimana"],[CalendarDays,"12","Programmati","Prossimi 7 giorni"],[TrendingUp,"+28%","Potenziale crescita","Con più costanza"]].map(([I,v,t,s])=><div className="metric" key={t}><I/><b>{v}</b><span>{t}</span><small>{s}</small></div>)}</div><div className="twocol"><section className="panel today"><div className="panelhead"><div><small>CONSIGLIO DEL GIORNO</small><h2>Oggi crea un Reel educativo</h2></div><span className="redpill">CONSIGLIATO</span></div><div className="idea"><div className="reelicon"><Video/></div><div><b>3 errori che i tuoi clienti fanno prima di scegliere...</b><p>Un contenuto rapido che aumenta autorevolezza e salvataggi.</p><div className="tags"><span>Reel</span><span>Educativo</span><span>30-45 sec</span></div></div></div><button className="redbtn" onClick={()=>setActive("Crea contenuti")}><WandSparkles/> Crea questo contenuto</button></section><section className="panel quickpanel"><small>ACCESSO RAPIDO</small><h2>Da dove vuoi partire?</h2>{[[BarChart3,"Analizza la mia presenza","Scopri cosa migliorare","Analisi"],[BookOpen,"Trova uno script","Idee già strutturate","Idee & Script"],[CalendarDays,"Pianifica la settimana","Organizza i contenuti","Calendario"]].map(([I,t,d,a])=><button onClick={()=>setActive(a)} key={t}><I/><span><b>{t}</b><small>{d}</small></span><ChevronRight/></button>)}</section></div></>}
+function Analysis({url,setUrl,business,setBusiness,analysis,setAnalysis,setActive}){return <><div className="pagehead"><div><span className="eyebrow">ANALISI AUTOMATICA</span><h1>Partiamo dalla tua presenza online.</h1><p>Inserisci sito web o profilo social e costruiamo la tua strategia.</p></div></div>{!analysis?<section className="analysisbox panel"><div className="analysisicon"><Search/></div><h2>Analizza la mia attività</h2><p>RP Social userà queste informazioni per preparare il profilo del brand e il piano contenuti.</p><label>Nome attività<input value={business} onChange={e=>setBusiness(e.target.value)} placeholder="Es. RP Digital"/></label><label>Sito web o link social<div className="urlinput"><Globe2/><input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://..."/></div></label><button className="redbtn big" onClick={()=>setAnalysis(true)}><Sparkles/> Avvia pre-analisi</button><small className="demowarn">V8 demo: l'analisi mostrata è dimostrativa. Il motore AI reale verrà collegato nel backend.</small></section>:<AnalysisResult setActive={setActive}/>}</>}
+function AnalysisResult({setActive}){return <><div className="analysisresult"><section className="panel scorebig"><div className="ring"><b>72</b><span>/100</span></div><div><small>SOCIAL SCORE</small><h2>Buon potenziale, ma manca una struttura.</h2><p>La presenza online è avviata. Possiamo migliorare costanza, varietà e conversione.</p></div></section><section className="panel findings"><h2>Pre-analisi</h2>{[[Check,"Profilo","Identità chiara, CTA da rafforzare"],[FileText,"Contenuti","Serve maggiore continuità editoriale"],[Video,"Formati","Aumentare Reel e contenuti educativi"],[Target,"Strategia","Creare rubriche riconoscibili e ricorrenti"]].map(([I,t,d])=><div key={t}><I/><span><b>{t}</b><small>{d}</small></span></div>)}</section></div><section className="panel actionplan"><div><small>PIANO D'AZIONE CONSIGLIATO</small><h2>La tua prossima settimana</h2></div><div className="planitems"><span><b>01</b> 1 Reel educativo</span><span><b>02</b> 1 Carosello di valore</span><span><b>03</b> 1 Post autorevolezza</span><span><b>04</b> Stories di engagement</span></div><button className="redbtn" onClick={()=>setActive("Idee & Script")}>Crea il mio piano editoriale <ArrowRight/></button></section></>}
+function Scripts(){return <><div className="pagehead"><div><span className="eyebrow">SCRIPT LIBRARY</span><h1>Non partire mai da una pagina bianca.</h1><p>Scegli una struttura e adattala alla tua attività.</p></div></div><div className="filters"><button className="active">Tutti</button><button>Reel</button><button>Post</button><button>Caroselli</button><button>Stories</button></div><div className="scriptgrid">{scripts.map(s=><article className="scriptcard" key={s.title}><div><span>{s.type}</span><em>{s.tag}</em></div><FileText/><h3>{s.title}</h3><p>{s.desc}</p><button>Personalizza per la mia attività <WandSparkles/></button></article>)}</div></>}
+function Creator(){const [type,setType]=useState("Reel"),[topic,setTopic]=useState("");return <><div className="pagehead"><div><span className="eyebrow">CONTENT STUDIO</span><h1>Trasforma un'idea in contenuto.</h1><p>RP Social prepara struttura, testo, CTA e indicazioni creative.</p></div></div><div className="creatorgrid"><section className="panel createform"><label>Formato<div className="formatrow">{["Post","Reel","Carosello","Stories"].map(x=><button className={type===x?"active":""} onClick={()=>setType(x)} key={x}>{x}</button>)}</div></label><label>Di cosa vuoi parlare?<textarea value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Es. 3 errori da evitare quando..."/></label><label>Obiettivo<select><option>Educare</option><option>Vendere</option><option>Creare engagement</option><option>Aumentare autorevolezza</option></select></label><button className="redbtn big"><Sparkles/> Genera con RP Social AI</button></section><section className="panel result"><span className="redpill">ANTEPRIMA</span><h2>{topic||"Il tuo contenuto apparirà qui"}</h2><p><b>HOOK</b><br/>Se stai facendo questo, probabilmente stai perdendo un'opportunità importante.</p><p><b>SVILUPPO</b><br/>Spiega il problema in modo semplice, mostra la soluzione e aggiungi un esempio concreto.</p><p><b>CTA</b><br/>Salva questo contenuto e seguici per altri consigli.</p><div className="resultactions"><button>Modifica</button><button>Salva in libreria</button></div></section></div></>}
+function Calendar(){return <><div className="pagehead"><div><span className="eyebrow">CALENDARIO EDITORIALE</span><h1>La settimana sotto controllo.</h1><p>Organizza contenuti e preparali per la programmazione.</p></div><button className="redbtn"><Plus/> Nuovo contenuto</button></div><div className="week">{["LUN 12","MAR 13","MER 14","GIO 15","VEN 16"].map((d,i)=><div className="day" key={d}><b>{d}</b>{i<4&&<article><span>{["REEL","POST","CAROSELLO","STORY"][i]}</span><p>{["3 errori da evitare","Caso cliente","5 consigli pratici","Dietro le quinte"][i]}</p><small>{10+i}:00</small></article>}<button><Plus/></button></div>)}</div></>}
+function Empty({icon:Icon,title,text}){return <section className="empty panel"><div><Icon/></div><span className="eyebrow">RP SOCIAL</span><h1>{title}</h1><p>{text}</p><button className="redbtn">Sezione predisposta</button></section>}
+function Footer(){return <footer>© 2026 RP Social — un prodotto RP Digital — P. IVA 01242270575 <span>Privacy · Cookie · Termini</span></footer>}
