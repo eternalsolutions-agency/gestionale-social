@@ -1,5 +1,6 @@
 import "./globals.css";
 import RippyAssistant from "../components/RippyAssistant";
+import RippyHero from "../components/RippyHero";
 
 export const metadata = {
   title: "RP Social — by RP Digital",
@@ -9,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="it">
-      <body>{children}<RippyAssistant/></body>
+      <body>{children}<RippyHero/><RippyAssistant/></body>
     </html>
   );
 }
