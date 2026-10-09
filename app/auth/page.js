@@ -1,10 +1,11 @@
 "use client";
 import {useEffect,useState} from "react";
-import {useRouter} from "next/navigation";
+import {useRouter,useSearchParams} from "next/navigation";
 import {supabase} from "../../lib/supabase";
 
 export default function AuthPage(){
   const router=useRouter();
+  const params=useSearchParams();
   const[tab,setTab]=useState("login");
   const[name,setName]=useState("");
   const[email,setEmail]=useState("");
@@ -12,8 +13,8 @@ export default function AuthPage(){
   const[loading,setLoading]=useState(false);
   const[message,setMessage]=useState("");
   const[error,setError]=useState("");
-  const enterApp=()=>{localStorage.setItem("rps_session","authenticated");router.replace("/")};
-  useEffect(()=>{supabase.auth.getSession().then(({data})=>{if(data.session)enterApp()})},[]);
+  const enterApp=()=>router.replace("/");
+  useEffect(()=>{setTab(params.get("tab")==="register"?"register":"login");supabase.auth.getSession().then(({data})=>{if(data.session)enterApp()})},[params]);
 
   async function submit(e){
     e.preventDefault();setLoading(true);setError("");setMessage("");
