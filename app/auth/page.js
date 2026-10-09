@@ -1,11 +1,10 @@
 "use client";
 import {useEffect,useState} from "react";
-import {useRouter,useSearchParams} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {supabase} from "../../lib/supabase";
 
 export default function AuthPage(){
   const router=useRouter();
-  const params=useSearchParams();
   const[tab,setTab]=useState("login");
   const[name,setName]=useState("");
   const[email,setEmail]=useState("");
@@ -14,7 +13,11 @@ export default function AuthPage(){
   const[message,setMessage]=useState("");
   const[error,setError]=useState("");
   const enterApp=()=>router.replace("/");
-  useEffect(()=>{setTab(params.get("tab")==="register"?"register":"login");supabase.auth.getSession().then(({data})=>{if(data.session)enterApp()})},[params]);
+  useEffect(()=>{
+    const requestedTab=new URLSearchParams(window.location.search).get("tab");
+    setTab(requestedTab==="register"?"register":"login");
+    supabase.auth.getSession().then(({data})=>{if(data.session)enterApp()});
+  },[]);
 
   async function submit(e){
     e.preventDefault();setLoading(true);setError("");setMessage("");
