@@ -12,8 +12,8 @@ export default function AuthPage(){
   const[loading,setLoading]=useState(false);
   const[message,setMessage]=useState("");
   const[error,setError]=useState("");
-
-  useEffect(()=>{supabase.auth.getSession().then(({data})=>{if(data.session)router.replace("/")})},[router]);
+  const enterApp=()=>{localStorage.setItem("rps_session","authenticated");router.replace("/")};
+  useEffect(()=>{supabase.auth.getSession().then(({data})=>{if(data.session)enterApp()})},[]);
 
   async function submit(e){
     e.preventDefault();setLoading(true);setError("");setMessage("");
@@ -21,12 +21,12 @@ export default function AuthPage(){
     if(tab==="register"){
       const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:name}}});
       if(error)setError(error.message);
-      else if(data.session)router.replace("/");
-      else setMessage("Registrazione completata. Controlla la tua email per confermare l'account.");
+      else if(data.session)enterApp();
+      else setMessage("Registrazione completata. Controlla la tua email per confermare l'account, poi accedi.");
     }else{
       const {error}=await supabase.auth.signInWithPassword({email,password});
       if(error)setError("Email o password non corrette.");
-      else router.replace("/");
+      else enterApp();
     }
     setLoading(false);
   }
