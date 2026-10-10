@@ -8,6 +8,7 @@ import AnalysisGate from "../components/AnalysisGate";
 import StrategyMount from "../components/StrategyMount";
 import IdeasMount from "../components/IdeasMount";
 import CreatorMount from "../components/CreatorMount";
+import CalendarMount from "../components/CalendarMount";
 
 export const metadata = {
   title: "RP Social — by RP Digital",
@@ -17,7 +18,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="it">
-      <body>{children}<RippyHero/><RippyAssistant/><AccountOnboardingGate/><AnalysisGate/><StrategyMount/><IdeasMount/><CreatorMount/><LaserCursor/></body>
+      <body>{children}<RippyHero/><RippyAssistant/><AccountOnboardingGate/><AnalysisGate/><StrategyMount/><IdeasMount/><CreatorMount/><CalendarMount/><LaserCursor/></body>
     </html>
   );
 }
