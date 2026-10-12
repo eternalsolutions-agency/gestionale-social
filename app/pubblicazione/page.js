@@ -54,14 +54,15 @@ export default function Publishing(){
  const preferred=c.metadata?.media_asset_id;const available=assets.some(a=>a.id===preferred)?preferred:assets.find(a=>a.content_id===c.id)?.id||"";
  const asset=locked?job.asset_id:(selected.asset!==undefined?selected.asset:available);
  const when=selected.when||localDateTime(job?.status==="queued"?job.scheduled_for:c.scheduled_at);
- const canSchedule=!!account&&!busy&&!["processing","pending","published","uncertain","failed"].includes(job?.status)&&c.status!=="published";
- const blocked=!!busy||!account||["queued","published","processing","uncertain"].includes(job?.status)||c.status==="published";
+ const unsupported=/stor|carousel|carosell/i.test(c.format||"");
+ const canSchedule=!unsupported&&!!account&&!busy&&!["processing","pending","published","uncertain","failed"].includes(job?.status)&&c.status!=="published";
+ const blocked=unsupported||!!busy||!account||["queued","published","processing","uncertain"].includes(job?.status)||c.status==="published";
  return <article key={c.id}><div className="status"><CheckCircle2/><span>{statusLabel(job?.status)|| (c.status==="ready"?"approvato":c.status)}</span></div><div className="content"><b>{c.title||"Contenuto"}</b><small>{c.format||"social"}{c.scheduled_at?" · "+new Date(c.scheduled_at).toLocaleString("it-IT"):""}</small><label>Account<select aria-label="Account per la pubblicazione" disabled={!!busy} value={account?.id||""} onChange={e=>pick(c.id,"connection",e.target.value)}>{!active.length&&<option value="">Collega prima Meta</option>}{active.map(a=><option key={a.id} value={a.id}>{a.account_name} · {a.platform}</option>)}</select></label><label>Media<select aria-label="Media da pubblicare" disabled={!!busy||!!locked||c.status==="published"} value={asset||""} onChange={e=>pick(c.id,"asset",e.target.value)}><option value="">Solo testo (Facebook)</option>{assets.map(a=><option key={a.id} value={a.id}>{a.content_id===c.id?"Associato · ":""}{a.kind==="video"?"Video":"Foto"} · {a.title||a.id}</option>)}</select></label>{job?.status==="queued"&&<small>Invio automatico: {new Date(job.scheduled_for).toLocaleString("it-IT")}</small>}
  {job?.scheduled_for&&job.caption_snapshot!==null&&<details><summary>Testo confermato</summary><p className="snapshot">{job.caption_snapshot}</p></details>}
- {job?.error_message&&<small role="status">{job.error_message}</small>}
+ {unsupported&&<small>Caroselli e Storie sono pronti per l'export dalla libreria. Invio automatico da abilitare dopo la verifica Meta.</small>}{job?.error_message&&<small role="status">{job.error_message}</small>}
  {canSchedule&&<label>Data e ora · {Intl.DateTimeFormat().resolvedOptions().timeZone}<input type="datetime-local" aria-label="Data e ora di pubblicazione" value={when} onChange={e=>pick(c.id,"when",e.target.value)}/></label>}
  </div><div className="publishActions"><button disabled={blocked} onClick={()=>publish(c,account,asset,job)}><Send/>{busy===c.id?"Invio…":job?.status==="pending"?"Verifica e pubblica":"Pubblica ora"}</button>
- {canSchedule&&<button disabled={!!busy} onClick={()=>schedule(c,account,asset,when)}><CalendarDays/>{job?.status==="queued"?"Aggiorna orario":"Programma invio"}</button>}
+ {unsupported&&<button onClick={()=>router.push("/libreria")}>Apri libreria</button>}{canSchedule&&<button disabled={!!busy} onClick={()=>schedule(c,account,asset,when)}><CalendarDays/>{job?.status==="queued"?"Aggiorna orario":"Programma invio"}</button>}
  {job?.status==="queued"&&<button className="cancelSchedule" disabled={!!busy} onClick={()=>cancel(job)}>Annulla invio</button>}</div></article>;
  }):<div className="empty">Approva o programma un contenuto nel calendario: comparira qui automaticamente.</div>}</section></main>;
 }
