@@ -12,13 +12,17 @@ export default function AuthPage(){
   const[loading,setLoading]=useState(false);
   const[message,setMessage]=useState("");
   const[error,setError]=useState("");
+  const[session,setSession]=useState(null);
   const enterApp=()=>router.replace("/");
   useEffect(()=>{
     const requestedTab=new URLSearchParams(window.location.search).get("tab");
     setTab(requestedTab==="register"?"register":"login");
-    supabase.auth.getSession().then(({data})=>{if(data.session)enterApp()});
+    supabase.auth.getSession().then(({data})=>setSession(data.session||null));
+    const {data:listener}=supabase.auth.onAuthStateChange((_event,next)=>setSession(next||null));
+    return()=>listener.subscription.unsubscribe();
   },[]);
 
+  async function logout(){setLoading(true);setError("");const {error}=await supabase.auth.signOut();if(error)setError("Non sono riuscito a disconnettere l'account. Riprova.");else{setSession(null);setEmail("");setPassword("");setMessage("Account disconnesso. Ora puoi accedere con un altro account.");}setLoading(false)}
   async function submit(e){
     e.preventDefault();setLoading(true);setError("");setMessage("");
     if(password.length<6){setError("La password deve contenere almeno 6 caratteri.");setLoading(false);return}
@@ -40,20 +44,7 @@ export default function AuthPage(){
     <section style={{width:"100%",maxWidth:430,border:"1px solid #222",background:"#0b0b0d",borderRadius:22,padding:30,boxShadow:"0 25px 80px rgba(0,0,0,.55)",position:"relative"}}>
       <button onClick={()=>router.push("/")} style={{border:0,background:"transparent",color:"#777",cursor:"pointer",padding:0,marginBottom:26}}>← Torna a RP Social</button>
       <div style={{marginBottom:25}}><div style={{fontSize:26,fontWeight:900,letterSpacing:-1}}>RP <span style={{color:"#ff1737"}}>SOCIAL</span></div><div style={{fontSize:9,letterSpacing:3,color:"#777",marginTop:3}}>BY RP DIGITAL</div></div>
-      <h1 style={{fontSize:30,margin:"0 0 7px"}}>{tab==="login"?"Bentornato.":"Crea il tuo account."}</h1>
-      <p style={{color:"#888",fontSize:13,lineHeight:1.6,margin:"0 0 24px"}}>{tab==="login"?"Accedi al tuo workspace RP Social.":"Inizia a costruire la tua strategia social."}</p>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,background:"#111",padding:5,borderRadius:12,marginBottom:22}}>
-        <button onClick={()=>{setTab("login");setError("");setMessage("")}} style={tabStyle(tab==="login")}>Accedi</button>
-        <button onClick={()=>{setTab("register");setError("");setMessage("")}} style={tabStyle(tab==="register")}>Registrati</button>
-      </div>
-      <form onSubmit={submit} style={{display:"grid",gap:14}}>
-        {tab==="register"&&<Field label="Nome e cognome" value={name} setValue={setName} placeholder="Il tuo nome" required/>}
-        <Field label="Email" value={email} setValue={setEmail} placeholder="nome@email.it" type="email" required/>
-        <Field label="Password" value={password} setValue={setPassword} placeholder="Minimo 6 caratteri" type="password" required/>
-        {error&&<div style={{fontSize:12,color:"#ff5c70",background:"rgba(255,23,55,.08)",border:"1px solid rgba(255,23,55,.25)",padding:12,borderRadius:10}}>{error}</div>}
-        {message&&<div style={{fontSize:12,color:"#b9f6ca",background:"rgba(80,200,120,.08)",border:"1px solid rgba(80,200,120,.2)",padding:12,borderRadius:10}}>{message}</div>}
-        <button disabled={loading} style={{border:0,borderRadius:12,padding:"14px 18px",fontWeight:800,background:"#ff1737",color:"white",cursor:"pointer",marginTop:4}}>{loading?"Attendi...":tab==="login"?"Accedi a RP Social":"Crea account"}</button>
-      </form>
+      {session?<><h1 style={{fontSize:30,margin:"0 0 7px"}}>Sei già connesso.</h1><p style={{color:"#888",fontSize:13,lineHeight:1.6,margin:"0 0 20px"}}>Sessione attiva{session.user?.email?<> come <b style={{color:"#fff"}}>{session.user.email}</b></>:null}. Puoi continuare nel workspace oppure cambiare account.</p><div style={{display:"grid",gap:10}}><button onClick={enterApp} style={{border:0,borderRadius:12,padding:"14px 18px",fontWeight:800,background:"#ff1737",color:"white",cursor:"pointer"}}>Continua nel workspace</button><button disabled={loading} onClick={logout} style={{border:"1px solid #333",borderRadius:12,padding:"14px 18px",fontWeight:800,background:"#111",color:"#fff",cursor:"pointer"}}>{loading?"Disconnessione...":"Esci / Cambia account"}</button></div>{error&&<div style={{marginTop:14,fontSize:12,color:"#ff5c70"}}>{error}</div>}</>:<><h1 style={{fontSize:30,margin:"0 0 7px"}}>{tab==="login"?"Bentornato.":"Crea il tuo account."}</h1><p style={{color:"#888",fontSize:13,lineHeight:1.6,margin:"0 0 24px"}}>{tab==="login"?"Accedi al tuo workspace RP Social.":"Inizia a costruire la tua strategia social."}</p><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,background:"#111",padding:5,borderRadius:12,marginBottom:22}}><button onClick={()=>{setTab("login");setError("");setMessage("")}} style={tabStyle(tab==="login")}>Accedi</button><button onClick={()=>{setTab("register");setError("");setMessage("")}} style={tabStyle(tab==="register")}>Registrati</button></div><form onSubmit={submit} style={{display:"grid",gap:14}}>{tab==="register"&&<Field label="Nome e cognome" value={name} setValue={setName} placeholder="Il tuo nome" required/>}<Field label="Email" value={email} setValue={setEmail} placeholder="nome@email.it" type="email" required/><Field label="Password" value={password} setValue={setPassword} placeholder="Minimo 6 caratteri" type="password" required/>{error&&<div style={{fontSize:12,color:"#ff5c70",background:"rgba(255,23,55,.08)",border:"1px solid rgba(255,23,55,.25)",padding:12,borderRadius:10}}>{error}</div>}{message&&<div style={{fontSize:12,color:"#b9f6ca",background:"rgba(80,200,120,.08)",border:"1px solid rgba(80,200,120,.2)",padding:12,borderRadius:10}}>{message}</div>}<button disabled={loading} style={{border:0,borderRadius:12,padding:"14px 18px",fontWeight:800,background:"#ff1737",color:"white",cursor:"pointer",marginTop:4}}>{loading?"Attendi...":tab==="login"?"Accedi a RP Social":"Crea account"}</button></form></>}
       <p style={{fontSize:10,color:"#555",textAlign:"center",margin:"20px 0 0"}}>Accesso protetto tramite Supabase Auth.</p>
     </section>
   </main>
