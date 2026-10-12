@@ -1,6 +1,7 @@
 import "./globals.css";
 import "./rippy-hero-fix.css";
 import "./theme.css";
+import "./kairo-assets.css";
 import KairoExperience from "../components/KairoExperience";
 import LaserCursor from "../components/LaserCursor";
 import AccountOnboardingGate from "../components/AccountOnboardingGate";
