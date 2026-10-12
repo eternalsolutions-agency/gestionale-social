@@ -1,5 +1,6 @@
 import "./globals.css";
 import "./rippy-hero-fix.css";
+import "./theme.css";
 import RippyAssistant from "../components/RippyAssistant";
 import RippyHero from "../components/RippyHero";
 import LaserCursor from "../components/LaserCursor";
@@ -11,6 +12,7 @@ import CreatorMount from "../components/CreatorMount";
 import CalendarMount from "../components/CalendarMount";
 import LandingMarketingMount from "../components/LandingMarketingMount";
 import StudioNavigationMount from "../components/StudioNavigationMount";
+import ThemeToggle from "../components/ThemeToggle";
 
 export const metadata = {
   title: "RP Social — by RP Digital",
@@ -19,8 +21,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="it">
-      <body>{children}<RippyHero/><RippyAssistant/><LandingMarketingMount/><AccountOnboardingGate/><AnalysisGate/><StrategyMount/><IdeasMount/><CreatorMount/><CalendarMount/><StudioNavigationMount/><LaserCursor/></body>
+    <html lang="it" data-theme="dark">
+      <body>{children}<RippyHero/><RippyAssistant/><LandingMarketingMount/><AccountOnboardingGate/><AnalysisGate/><StrategyMount/><IdeasMount/><CreatorMount/><CalendarMount/><StudioNavigationMount/><ThemeToggle/><LaserCursor/></body>
     </html>
   );
 }
