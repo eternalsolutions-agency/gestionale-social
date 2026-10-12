@@ -22,7 +22,20 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="it" data-theme="dark">
-      <body>{children}<KairoExperience/><LandingMarketingMount/><AccountOnboardingGate/><AnalysisGate/><StrategyMount/><IdeasMount/><CreatorMount/><CalendarMount/><StudioNavigationMount/><ThemeToggle/><LaserCursor/></body>
+      <body>
+        {children}
+        <KairoExperience/>
+        <LandingMarketingMount/>
+        <AccountOnboardingGate/>
+        <AnalysisGate/>
+        <StrategyMount/>
+        <IdeasMount/>
+        <CreatorMount/>
+        <CalendarMount/>
+        <StudioNavigationMount/>
+        <ThemeToggle/>
+        <LaserCursor/>
+      </body>
     </html>
   );
 }
