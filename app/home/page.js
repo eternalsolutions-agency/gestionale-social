@@ -1,0 +1,11 @@
+"use client";
+import {useRef} from "react";
+import {useRouter} from "next/navigation";
+import {ArrowRight,BookOpen,CalendarDays,Check,Search,Sparkles,Target,Zap} from "lucide-react";
+import FreeAudit from "../../components/FreeAudit";
+
+function Brand(){return <div className="brand"><div className="kairoWord">KAIRO</div><div className="kairoSub">AI SOCIAL WORKSPACE</div></div>}
+export default function KairoHome(){
+ const router=useRouter(),auditRef=useRef(null);const auth=tab=>router.push(`/auth?tab=${tab}`);const audit=()=>auditRef.current?.open();
+ return <main className="landing"><div className="redglow g1"/><nav className="landingnav"><Brand/><div className="navlinks"><span>Funzionalità</span><span>Come funziona</span><span>Prezzi</span><span>FAQ</span></div><div className="navactions"><button className="outline" onClick={()=>auth('login')}>Accedi</button><button className="redbtn" onClick={audit}>Prova gratis</button></div></nav><section className="hero"><div className="herocopy"><div className="kicker">— KAIRO · <b>AI SOCIAL WORKSPACE</b></div><h1>Il contenuto giusto.<br/><em>Al momento giusto.</em></h1><p>KAIRO analizza il tuo brand, prepara la strategia e trasforma le idee in contenuti pronti. Creati dall'AI, approvati da te.</p><div className="heroactions"><button className="redbtn big" onClick={audit}><Zap/> Analizza gratis <ArrowRight/></button><button className="outline big" onClick={()=>router.push('/auth?tab=login')}>Entra nel workspace</button></div><div className="ticks"><span><Check/> Nessuna registrazione iniziale</span><span><Check/> Anteprima immediata</span><span><Check/> Piano completo dopo l'accesso</span></div></div></section><FreeAudit ref={auditRef} onRegister={()=>auth('register')}/><section className="features">{[[Search,'Analizza','Capisci cosa migliorare.'],[Target,'Pianifica','Trasforma gli obiettivi in un piano.'],[BookOpen,'Idee & Script','Non partire mai da zero.'],[Sparkles,'Crea con KAIRO','Dal brief al contenuto.'],[CalendarDays,'Pubblica','Porta tutto nel calendario.']].map(([I,t,d])=><div className="feature" key={t}><I/><b>{t}</b><p>{d}</p></div>)}</section><footer><Brand/><p>KAIRO · Il contenuto giusto, al momento giusto.</p></footer></main>
+}
