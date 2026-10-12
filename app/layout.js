@@ -1,9 +1,7 @@
 import "./globals.css";
 import "./rippy-hero-fix.css";
 import "./theme.css";
-import RippyAssistant from "../components/RippyAssistant";
-import RippyHero from "../components/RippyHero";
-import RippyScrollStory from "../components/RippyScrollStory";
+import KairoExperience from "../components/KairoExperience";
 import LaserCursor from "../components/LaserCursor";
 import AccountOnboardingGate from "../components/AccountOnboardingGate";
 import AnalysisGate from "../components/AnalysisGate";
@@ -16,14 +14,14 @@ import StudioNavigationMount from "../components/StudioNavigationMount";
 import ThemeToggle from "../components/ThemeToggle";
 
 export const metadata = {
-  title: "RP Social — by RP Digital",
-  description: "Il tuo Social Media Manager digitale"
+  title: "KAIRO — Il contenuto giusto, al momento giusto",
+  description: "KAIRO analizza, pianifica e crea i tuoi contenuti social con l'intelligenza artificiale. Creati dall'AI, approvati da te."
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="it" data-theme="dark">
-      <body>{children}<RippyHero/><RippyScrollStory/><RippyAssistant/><LandingMarketingMount/><AccountOnboardingGate/><AnalysisGate/><StrategyMount/><IdeasMount/><CreatorMount/><CalendarMount/><StudioNavigationMount/><ThemeToggle/><LaserCursor/></body>
+      <body>{children}<KairoExperience/><LandingMarketingMount/><AccountOnboardingGate/><AnalysisGate/><StrategyMount/><IdeasMount/><CreatorMount/><CalendarMount/><StudioNavigationMount/><ThemeToggle/><LaserCursor/></body>
     </html>
   );
 }
