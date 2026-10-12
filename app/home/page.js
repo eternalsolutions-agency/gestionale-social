@@ -3,5 +3,89 @@ import {useRef} from "react";
 import {useRouter} from "next/navigation";
 import {ArrowRight,BookOpen,CalendarDays,Check,Search,Sparkles,Target,Zap} from "lucide-react";
 import FreeAudit from "../../components/FreeAudit";
-function Brand(){return <div className="brand"><img className="kairoBrandImage" src="/kairo/logo.jpg" alt="KAIRO"/></div>}
-export default function KairoHome(){const router=useRouter(),auditRef=useRef(null);const auth=tab=>router.push(`/auth?tab=${tab}`),audit=()=>auditRef.current?.open();const go=p=>router.push(p);return <main className="landing"><nav className="landingnav"><Brand/><div className="navlinks"><button onClick={()=>go('/funzionalita')}>Funzionalità</button><button onClick={()=>go('/come-funziona')}>Come funziona</button><button onClick={()=>go('/prezzi')}>Prezzi</button><button onClick={()=>go('/faq')}>FAQ</button></div><div className="navactions"><button className="outline" onClick={()=>auth('login')}>Accedi</button><button className="redbtn" onClick={audit}>Prova gratis</button></div></nav><section className="hero"><video className="heroOfficial" autoPlay muted loop playsInline poster="/kairo/hero.jpg"><source src="/kairo/hero-loop.mp4" type="video/mp4"/></video><div className="herocopy"><div className="kicker">KAIRO · AI SOCIAL WORKSPACE</div><h1>I tuoi social,<br/><em>senza il caos.</em></h1><p>KAIRO studia il tuo brand e ti aiuta a decidere cosa pubblicare, come comunicarlo e quando farlo. Tu mantieni il controllo. L'AI accelera il lavoro.</p><div className="heroactions"><button className="redbtn big" onClick={audit}><Zap/> Analizza il mio brand <ArrowRight/></button><button className="outline big" onClick={()=>auth('login')}>Entra nel workspace</button></div><div className="ticks"><span><Check/> Analisi immediata</span><span><Check/> Piano editoriale</span><span><Check/> Contenuti pronti</span></div></div></section><FreeAudit ref={auditRef} onRegister={()=>auth('register')}/><section className="kairoFlow"><div className="flowHead"><span>UN FLUSSO SEMPLICE</span><h2>Dal tuo brand ai contenuti.<br/>Tutto nello stesso posto.</h2><p>Niente strumenti sparsi e niente pagine complicate. KAIRO trasforma il lavoro social in cinque passaggi chiari.</p></div><div className="features">{[[Search,'Analizza','KAIRO comprende brand, presenza online e opportunità.'],[Target,'Pianifica','Obiettivi e pubblico diventano un piano editoriale concreto.'],[BookOpen,'Trova idee','Ricevi idee e script coerenti con il tuo business.'],[Sparkles,'Crea','Genera copy e creatività mantenendo il tuo stile.'],[CalendarDays,'Programma','Organizza i contenuti nel calendario e mantieni costanza.']].map(([I,t,d],i)=><div className="feature" key={t}><span className="flowNumber">0{i+1}</span><I/><b>{t}</b><p>{d}</p></div>)}</section></section><section className="kairoPromise"><span>KAIRO</span><h2>La strategia resta tua.<br/>Il lavoro ripetitivo lo fa l'AI.</h2><p>Un workspace pensato per attività, professionisti e team che vogliono comunicare meglio senza passare ore davanti ai social.</p><button className="redbtn big" onClick={audit}>Inizia dall'analisi <ArrowRight/></button></section><footer><Brand/><p>KAIRO · AI Social Workspace</p></footer></main>}
+
+function Brand(){
+  return <div className="brand"><img className="kairoBrandImage" src="/kairo/logo.jpg" alt="KAIRO"/></div>;
+}
+
+export default function KairoHome(){
+  const router=useRouter();
+  const auditRef=useRef(null);
+  const auth=tab=>router.push(`/auth?tab=${tab}`);
+  const audit=()=>auditRef.current?.open();
+  const go=p=>router.push(p);
+  const steps=[
+    [Search,"Analizza","KAIRO comprende brand, presenza online e opportunità."],
+    [Target,"Pianifica","Obiettivi e pubblico diventano un piano editoriale concreto."],
+    [BookOpen,"Trova idee","Ricevi idee e script coerenti con il tuo business."],
+    [Sparkles,"Crea","Genera copy e creatività mantenendo il tuo stile."],
+    [CalendarDays,"Programma","Organizza i contenuti nel calendario e mantieni costanza."]
+  ];
+
+  return (
+    <main className="landing">
+      <nav className="landingnav">
+        <Brand/>
+        <div className="navlinks">
+          <button onClick={()=>go("/funzionalita")}>Funzionalità</button>
+          <button onClick={()=>go("/come-funziona")}>Come funziona</button>
+          <button onClick={()=>go("/prezzi")}>Prezzi</button>
+          <button onClick={()=>go("/faq")}>FAQ</button>
+        </div>
+        <div className="navactions">
+          <button className="outline" onClick={()=>auth("login")}>Accedi</button>
+          <button className="redbtn" onClick={audit}>Prova gratis</button>
+        </div>
+      </nav>
+
+      <section className="hero">
+        <video className="heroOfficial" autoPlay muted loop playsInline poster="/kairo/hero.jpg">
+          <source src="/kairo/hero-loop.mp4" type="video/mp4"/>
+        </video>
+        <div className="herocopy">
+          <div className="kicker">KAIRO · AI SOCIAL WORKSPACE</div>
+          <h1>I tuoi social,<br/><em>senza il caos.</em></h1>
+          <p>KAIRO studia il tuo brand e ti aiuta a decidere cosa pubblicare, come comunicarlo e quando farlo. Tu mantieni il controllo. L&apos;AI accelera il lavoro.</p>
+          <div className="heroactions">
+            <button className="redbtn big" onClick={audit}><Zap/> Analizza il mio brand <ArrowRight/></button>
+            <button className="outline big" onClick={()=>auth("login")}>Entra nel workspace</button>
+          </div>
+          <div className="ticks">
+            <span><Check/> Analisi immediata</span>
+            <span><Check/> Piano editoriale</span>
+            <span><Check/> Contenuti pronti</span>
+          </div>
+        </div>
+      </section>
+
+      <FreeAudit ref={auditRef} onRegister={()=>auth("register")}/>
+
+      <section className="kairoFlow">
+        <div className="flowHead">
+          <span>UN FLUSSO SEMPLICE</span>
+          <h2>Dal tuo brand ai contenuti.<br/>Tutto nello stesso posto.</h2>
+          <p>Niente strumenti sparsi e niente pagine complicate. KAIRO trasforma il lavoro social in cinque passaggi chiari.</p>
+        </div>
+        <div className="features">
+          {steps.map(([Icon,title,description],i)=>(
+            <div className="feature" key={title}>
+              <span className="flowNumber">0{i+1}</span>
+              <Icon/>
+              <b>{title}</b>
+              <p>{description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="kairoPromise">
+        <span>KAIRO</span>
+        <h2>La strategia resta tua.<br/>Il lavoro ripetitivo lo fa l&apos;AI.</h2>
+        <p>Un workspace pensato per attività, professionisti e team che vogliono comunicare meglio senza passare ore davanti ai social.</p>
+        <button className="redbtn big" onClick={audit}>Inizia dall&apos;analisi <ArrowRight/></button>
+      </section>
+
+      <footer><Brand/><p>KAIRO · AI Social Workspace</p></footer>
+    </main>
+  );
+}
