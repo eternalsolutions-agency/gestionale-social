@@ -28,6 +28,9 @@ do $$begin
 end $$;
 select set_config('kairo.test.content',public.kairo_external_content('b1000000-0000-4000-8000-000000000001','c1000000-0000-4000-8000-000000000001','External photo test','Caption test','post')::text,true);
 select public.create_ai_generation('b1000000-0000-4000-8000-000000000001',current_setting('kairo.test.content')::uuid,'image','Team test prompt','{}');
+reset role;
+insert into public.subscriptions(user_id,plan,status,current_period_end) values('a1000000-0000-4000-8000-000000000001','pro','active',now()+interval '30 days');
+set local role authenticated;
 select public.kairo_reserve_video_generation('c1000000-0000-4000-8000-000000000001',current_setting('kairo.test.content')::uuid,'Team test prompt','e1000000-0000-4000-8000-000000000001');
 select public.kairo_attach_media_to_content(current_setting('kairo.test.content')::uuid,'c1000000-0000-4000-8000-000000000001');
 select public.kairo_schedule_meta_post(current_setting('kairo.test.content')::uuid,'d1000000-0000-4000-8000-000000000001','c1000000-0000-4000-8000-000000000001',now()+interval '1 day');
