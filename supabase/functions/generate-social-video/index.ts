@@ -83,7 +83,7 @@ async function submitVideo(req:Request){
  const {data:a,error:ae}=await db.from("media_assets").select("storage_path").eq("id",body.asset_id).single();if(ae||!a?.storage_path)throw new Error("Immagine non disponibile");
  const {data:s,error:se}=await db.storage.from("rp-social-media").createSignedUrl(a.storage_path,86400);if(se||!s?.signedUrl)throw new Error("Impossibile preparare l'immagine");
  submitted=true;
- const r=await fetch("https://queue.fal.run/fal-ai/pika/v2.1/image-to-video",{method:"POST",headers:{Authorization:"Key "+key,"Content-Type":"application/json"},body:JSON.stringify({image_url:s.signedUrl,prompt}),signal:AbortSignal.timeout(25000)});
+ const r=await fetch("https://queue.fal.run/fal-ai/pika/v2.1/image-to-video",{method:"POST",headers:{Authorization:"Key "+key,"Content-Type":"application/json"},body:JSON.stringify({image_url:s.signedUrl,prompt,duration:5,resolution:"720p"}),signal:AbortSignal.timeout(25000)});
  const d=await r.json();
  if(!r.ok){submitted=r.status>=500;throw new Error(typeof d.detail==="string"?d.detail:"La richiesta video non e stata accettata da fal.ai");}
  if(!d.request_id||!d.status_url||!d.response_url)throw new Error("Risposta della coda non completa. Non reinviare la richiesta.");
