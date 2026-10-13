@@ -1,4 +1,5 @@
 "use client";
+import FlowBackdrop from "../../components/FlowBackdrop";
 import {useEffect,useRef,useState} from "react";
 import {useRouter} from "next/navigation";
 import {Menu,X,ArrowRight,BookOpen,CalendarDays,Check,Search,Sparkles,Target,Zap} from "lucide-react";
@@ -67,10 +68,9 @@ export default function KairoHome(){
           <p>Niente strumenti sparsi e niente pagine complicate. KAIRO trasforma il lavoro social in cinque passaggi chiari.</p>
         </div>
         <div className="features">
-          {steps.map(([Icon,title,description],i)=>(
-            <div className="feature" key={title}>
-              <span className="flowNumber">0{i+1}</span>
-              <Icon/>
+          {steps.map(([,title,description])=>(
+            <div className="feature kairoImageCard" key={title}>
+              <FlowBackdrop title={title}/>
               <b>{title}</b>
               <p>{description}</p>
             </div>
