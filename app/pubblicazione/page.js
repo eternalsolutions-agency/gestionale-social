@@ -18,10 +18,10 @@ export default function Publishing(){
  const [cr,sr,ar,config]=await Promise.all([
  supabase.from("contents").select("id,title,format,status,scheduled_at,metadata").eq("business_id",b.id).in("status",["ready","scheduled","published"]).order("created_at",{ascending:false}).limit(100),
  supabase.rpc("kairo_team_channels",{p_business:b.id}),
- supabase.from("media_assets").select("id,title,kind,mime_type,content_id").eq("business_id",b.id).order("created_at",{ascending:false}).limit(100),
+ supabase.from("media_assets").select("id,title,kind,mime_type,content_id,metadata").eq("business_id",b.id).order("created_at",{ascending:false}).limit(100),
  b.owner_id===user.id?invoke("meta-social-connect",{action:"status"}):Promise.resolve({configured:false})
  ]);if(cr.error)throw cr.error;if(sr.error)throw sr.error;if(ar.error)throw ar.error;
- setItems(cr.data||[]);setConnections(sr.data||[]);setAssets(ar.data||[]);setConfigured(config.configured);
+ setItems(cr.data||[]);setConnections(sr.data||[]);setAssets((ar.data||[]).filter(a=>!a.metadata?.internal_reel_source));setConfigured(config.configured);
  const ids=(cr.data||[]).map(x=>x.id);if(ids.length){const jr=await supabase.from("meta_publish_jobs").select("id,content_id,connection_id,status,error_message,asset_id,scheduled_for,caption_snapshot").in("content_id",ids);if(jr.error)throw jr.error;setJobs(jr.data||[]);}else setJobs([]);
  }catch(e){setMessage(e.message||"Impossibile caricare Pubblicazione Social.");}finally{setLoading(false);}
  }
