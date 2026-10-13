@@ -57,7 +57,7 @@ export default function KairoHome(){
         </div>
         <div className="heroVisual"><video autoPlay muted loop playsInline preload="metadata" poster="/kairo-v2/mascot.jpg" aria-label="KAIRO ti dà il benvenuto"><source src="/kairo-v2/greeting.mp4" type="video/mp4"/></video><img className="mascotStill" src="/kairo-v2/mascot.jpg" alt="KAIRO, il tuo assistente social"/></div>
       </section>
-      <section className="kairoIntro"><div className="introCopy"><span>CONOSCI KAIRO</span><h2>Il tuo assistente.<br/>Il tuo prossimo passo.</h2><p>Guarda l’introduzione e scopri il mondo KAIRO. Avvia il video per ascoltarlo.</p></div><div className="introPlayer"><video controls playsInline preload="metadata" poster="/kairo-v2/intro-poster.jpg" aria-label="Video introduttivo KAIRO"><source src="/kairo-v2/intro.mp4" type="video/mp4"/></video></div></section>
+      <section className="kairoIntro"><div className="introCopy"><span>CONOSCI KAIRO</span><h2>Il tuo assistente.<br/>Il tuo prossimo passo.</h2><p>Guarda l’introduzione e scopri il mondo KAIRO. Avvia il video per ascoltarlo.</p></div><div className="introPlayer"><video controls playsInline preload="auto" poster="/kairo-v2/intro-poster.jpg?v=2" aria-label="Video introduttivo KAIRO"><source src="/kairo-v2/kairo-labs-intro-v2.mp4" type="video/mp4"/></video></div></section>
 
       <FreeAudit ref={auditRef} onRegister={()=>auth("register")}/>
 
