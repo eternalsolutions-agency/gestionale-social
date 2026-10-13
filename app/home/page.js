@@ -11,6 +11,16 @@ function Brand(){return <KairoBrand/>}
 export default function KairoHome(){
   const router=useRouter();
   const auditRef=useRef(null);
+  const introRef=useRef(null);
+  useEffect(()=>{
+    const video=introRef.current;
+    if(!video)return;
+    const observer=new IntersectionObserver(([entry])=>{
+      if(entry.isIntersecting){video.play().catch(()=>{})}else{video.pause()}
+    },{threshold:0.35});
+    observer.observe(video);
+    return()=>observer.disconnect();
+  },[]);
   const[menuOpen,setMenuOpen]=useState(false);
   const auth=tab=>router.push(`/auth?tab=${tab}`);
   const audit=()=>auditRef.current?.open();
@@ -57,7 +67,7 @@ export default function KairoHome(){
         </div>
         <div className="heroVisual"><video autoPlay muted loop playsInline preload="metadata" poster="/kairo-v2/mascot.jpg" aria-label="KAIRO ti dà il benvenuto"><source src="/kairo-v2/greeting.mp4" type="video/mp4"/></video><img className="mascotStill" src="/kairo-v2/mascot.jpg" alt="KAIRO, il tuo assistente social"/></div>
       </section>
-      <section className="kairoIntro"><div className="introCopy"><span>CONOSCI KAIRO</span><h2>Il tuo assistente.<br/>Il tuo prossimo passo.</h2><p>Guarda l’introduzione e scopri il mondo KAIRO. Avvia il video per ascoltarlo.</p></div><div className="introPlayer"><video controls playsInline preload="auto" poster="/kairo-v2/intro-poster.jpg?v=2" aria-label="Video introduttivo KAIRO"><source src="/kairo-v2/kairo-labs-intro-v2.mp4" type="video/mp4"/></video></div></section>
+      <section className="kairoIntro"><div className="introCopy"><span>CONOSCI KAIRO</span><h2>Il tuo assistente.<br/>Il tuo prossimo passo.</h2><p>Guarda l’introduzione e scopri il mondo KAIRO. Attiva l’audio dai controlli per ascoltarlo.</p></div><div className="introPlayer"><video ref={introRef} muted loop controls playsInline preload="auto" poster="/kairo-v2/intro-poster.jpg?v=2" aria-label="Video introduttivo KAIRO"><source src="/kairo-v2/kairo-labs-intro-v2.mp4" type="video/mp4"/></video></div></section>
 
       <FreeAudit ref={auditRef} onRegister={()=>auth("register")}/>
 
