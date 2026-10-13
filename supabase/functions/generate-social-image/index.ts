@@ -32,7 +32,7 @@ Deno.serve(async(req:Request)=>{
   if(businessError||!business)return json({error:"Completa prima il profilo aziendale."},400);
 if(contentId){const{data:target,error:targetError}=await userClient.from("contents").select("id").eq("id",contentId).eq("business_id",business.id).maybeSingle();if(targetError||!target)return json({error:"Il contenuto attivo non e disponibile. Seleziona una nuova bozza."},400);}
   const{data:brand}=await userClient.from("brand_profiles").select("*").eq("business_id",business.id).maybeSingle();
-  const brandContext=[business.name&&`Brand: ${business.name}`,business.industry&&`Settore: ${business.industry}`,business.target_audience&&`Target: ${business.target_audience}`,business.tone_of_voice&&`Tono: ${business.tone_of_voice}`,brand?.visual_style&&`Stile visuale: ${brand.visual_style}`].filter(Boolean).join(". ");
+  const brandContext=[business.name&&`Brand: ${business.name}`,business.industry&&`Settore: ${business.industry}`,business.target_audience&&`Target: ${business.target_audience}`,business.tone_of_voice&&`Tono: ${business.tone_of_voice}`,brand?.visual_notes&&`Indicazioni visuali: ${brand.visual_notes}`,brand?.colors&&`Colori del brand: ${JSON.stringify(brand.colors)}`].filter(Boolean).join(". ");
   const finalPrompt=`${prompt}. ${brandContext}. Professional social media visual, polished commercial photography/design, clean composition, no watermark.`;
   const{data:gen,error:genError}=await userClient.rpc("create_ai_generation",{p_business_id:business.id,p_content_id:contentId,p_generation_type:generationType,p_prompt:finalPrompt,p_metadata:{format,quality,original_prompt:prompt}});
   if(genError)throw new Error(`Creazione job AI: ${genError.message}`);

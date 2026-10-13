@@ -15,8 +15,9 @@ export async function executePublication(db:any,userId:string,params:{content_id
  try{
  const {content_id,connection_id,asset_id}=params;
  if(!content_id||!connection_id)return json({error:"Seleziona contenuto e account."},400);
- const {data:c,error:ce}=await db.from("contents").select("id,business_id,caption,body,cta,hashtags,status,format").eq("id",content_id).single();
+ const {data:c,error:ce}=await db.from("contents").select("id,business_id,caption,body,cta,hashtags,status,format,approval_status,approved_asset_id").eq("id",content_id).single();
  if(ce||!c)throw new Error("Contenuto non disponibile.");
+ if(c.approval_status!=="approved")throw new Error("Il titolare deve approvare prima il contenuto.");
  if(!["ready","scheduled","published"].includes(c.status))throw new Error("Approva prima il contenuto nel calendario.");
  const {data:b}=await db.from("businesses").select("id").eq("id",c.business_id).eq("owner_id",userId).single();if(!b)throw new Error("Contenuto non autorizzato.");
  const {data:connection}=await db.from("social_connections").select("id,platform,status,external_account_id,token_secret_id").eq("id",connection_id).eq("business_id",c.business_id).eq("status","connected").single();
@@ -28,6 +29,7 @@ export async function executePublication(db:any,userId:string,params:{content_id
  if(c.status==="published"&&!previous)throw new Error("Il contenuto risulta gia pubblicato. Crea una nuova bozza per un altro invio.");
  const selectedAsset=previous?.scheduled_for&&previous.status!=="cancelled"?previous.asset_id:previous?.status==="pending"?previous.asset_id:asset_id;
  if(previous?.media_required&&!selectedAsset&&previous.status!=="cancelled")throw new Error("Il media programmato e stato rimosso: annulla e prepara un nuovo invio.");
+ if((selectedAsset||null)!==(c.approved_asset_id||null))throw new Error("Il media selezionato non è quello approvato. Associalo alla bozza e richiedi una nuova approvazione.");
  let mediaUrl="",video=false;
  if(selectedAsset){
  const {data:a}=await db.from("media_assets").select("id,kind,mime_type,storage_path").eq("id",selectedAsset).eq("business_id",c.business_id).single();if(!a?.storage_path)throw new Error("Media non disponibile.");

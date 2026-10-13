@@ -33,6 +33,9 @@ insert into public.subscriptions(user_id,plan,status,current_period_end) values(
 set local role authenticated;
 select public.kairo_reserve_video_generation('c1000000-0000-4000-8000-000000000001',current_setting('kairo.test.content')::uuid,'Team test prompt','e1000000-0000-4000-8000-000000000001');
 select public.kairo_attach_media_to_content(current_setting('kairo.test.content')::uuid,'c1000000-0000-4000-8000-000000000001');
+select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000001',true);
+select public.kairo_review_content(current_setting('kairo.test.content')::uuid,'approved','',1);
+select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000002',true);
 select public.kairo_schedule_meta_post(current_setting('kairo.test.content')::uuid,'d1000000-0000-4000-8000-000000000001','c1000000-0000-4000-8000-000000000001',now()+interval '1 day');
 do $$declare ok boolean:=false;begin
  begin perform public.kairo_team_invite('b1000000-0000-4000-8000-000000000001','bad@example.invalid');exception when others then ok:=true;end;
