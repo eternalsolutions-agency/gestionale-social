@@ -1,4 +1,3 @@
 "use client";
-import {useEffect,useState} from "react";
-import {Moon,Sun} from "lucide-react";
-export default function ThemeToggle(){const[theme,setTheme]=useState("dark");useEffect(()=>{const saved=localStorage.getItem("rps_theme")||"dark";setTheme(saved);document.documentElement.dataset.theme=saved},[]);function toggle(){const next=theme==="dark"?"light":"dark";setTheme(next);localStorage.setItem("rps_theme",next);document.documentElement.dataset.theme=next;window.dispatchEvent(new CustomEvent("rps-theme",{detail:next}))}return <button className="rpThemeToggle" onClick={toggle} aria-label={theme==="dark"?"Passa al tema chiaro":"Passa al tema scuro"} title={theme==="dark"?"Tema chiaro":"Tema scuro"}>{theme==="dark"?<Sun/>:<Moon/>}<span>{theme==="dark"?"Light":"Dark"}</span></button>}
+import {useEffect} from "react";
+export default function ThemeToggle(){useEffect(()=>{document.documentElement.dataset.theme="light";try{localStorage.setItem("rps_theme","light")}catch{}},[]);return null}

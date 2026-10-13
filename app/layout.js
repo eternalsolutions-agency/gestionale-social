@@ -21,7 +21,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="it" data-theme="dark">
+    <html lang="it" data-theme="light">
       <body>
         {children}
         <KairoExperience/>

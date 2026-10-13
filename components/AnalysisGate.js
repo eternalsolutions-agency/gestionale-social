@@ -18,5 +18,6 @@ export default function AnalysisGate(){
   return()=>{obs.disconnect();document.removeEventListener("click",sync,true)};
  },[]);
  if(!target||!active)return null;
- return createPortal(<div className="realAnalysisLayer"><style>{`.realAnalysisLayer{position:absolute;inset:0;z-index:50;background:#050505;min-height:100%;padding:0}.app .page{position:relative}`}</style><RealAnalysis/></div>,target)
+ return createPortal(<div className="realAnalysisLayer"><style>{`.realAnalysisLayer{position:absolute;inset:0;z-index:50;background:#fff;min-height:100%;padding:0}.app .page{position:relative}`}</style><RealAnalysis/></div>,target)
 }
+

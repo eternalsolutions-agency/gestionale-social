@@ -1,19 +1,20 @@
 "use client";
-import {useRef} from "react";
+import {useEffect,useRef,useState} from "react";
 import {useRouter} from "next/navigation";
-import {ArrowRight,BookOpen,CalendarDays,Check,Search,Sparkles,Target,Zap} from "lucide-react";
+import {Menu,X,ArrowRight,BookOpen,CalendarDays,Check,Search,Sparkles,Target,Zap} from "lucide-react";
+import KairoBrand from "../../components/KairoBrand";
 import FreeAudit from "../../components/FreeAudit";
 
-function Brand(){
-  return <div className="brand"><img className="kairoBrandImage" src="/kairo/logo.jpg" alt="KAIRO"/></div>;
-}
+function Brand(){return <KairoBrand/>}
 
 export default function KairoHome(){
   const router=useRouter();
   const auditRef=useRef(null);
+  const[menuOpen,setMenuOpen]=useState(false);
   const auth=tab=>router.push(`/auth?tab=${tab}`);
   const audit=()=>auditRef.current?.open();
-  const go=p=>router.push(p);
+  useEffect(()=>{if(new URLSearchParams(window.location.search).get("audit")==="1")auditRef.current?.open()},[]);
+  const go=p=>{setMenuOpen(false);router.push(p)};
   const steps=[
     [Search,"Analizza","KAIRO comprende brand, presenza online e opportunità."],
     [Target,"Pianifica","Obiettivi e pubblico diventano un piano editoriale concreto."],
@@ -26,7 +27,7 @@ export default function KairoHome(){
     <main className="landing">
       <nav className="landingnav">
         <Brand/>
-        <div className="navlinks">
+        <div className={menuOpen?"navlinks open":"navlinks"}>
           <button onClick={()=>go("/funzionalita")}>Funzionalità</button>
           <button onClick={()=>go("/come-funziona")}>Come funziona</button>
           <button onClick={()=>go("/prezzi")}>Prezzi</button>
@@ -34,14 +35,11 @@ export default function KairoHome(){
         </div>
         <div className="navactions">
           <button className="outline" onClick={()=>auth("login")}>Accedi</button>
-          <button className="redbtn" onClick={audit}>Prova gratis</button>
+          <button className="redbtn" onClick={audit}>Prova gratis</button><button className="homeMenuButton" aria-label={menuOpen?"Chiudi menu":"Apri menu"} aria-expanded={menuOpen} onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?<X/>:<Menu/>}</button>
         </div>
       </nav>
 
       <section className="hero">
-        <video className="heroOfficial" autoPlay muted loop playsInline poster="/kairo/hero.jpg">
-          <source src="/kairo/hero-loop.mp4" type="video/mp4"/>
-        </video>
         <div className="herocopy">
           <div className="kicker">KAIRO · AI SOCIAL WORKSPACE</div>
           <h1>I tuoi social,<br/><em>senza il caos.</em></h1>
@@ -56,7 +54,9 @@ export default function KairoHome(){
             <span><Check/> Contenuti pronti</span>
           </div>
         </div>
+        <div className="heroVisual"><video autoPlay muted loop playsInline preload="metadata" poster="/kairo-v2/mascot.jpg" aria-label="KAIRO ti dà il benvenuto"><source src="/kairo-v2/greeting.mp4" type="video/mp4"/></video><img className="mascotStill" src="/kairo-v2/mascot.jpg" alt="KAIRO, il tuo assistente social"/></div>
       </section>
+      <section className="kairoIntro"><div className="introCopy"><span>CONOSCI KAIRO</span><h2>Il tuo assistente.<br/>Il tuo prossimo passo.</h2><p>Guarda l’introduzione e scopri il mondo KAIRO. Avvia il video per ascoltarlo.</p></div><div className="introPlayer"><video controls playsInline preload="metadata" poster="/kairo-v2/intro-poster.jpg" aria-label="Video introduttivo KAIRO"><source src="/kairo-v2/intro.mp4" type="video/mp4"/></video></div></section>
 
       <FreeAudit ref={auditRef} onRegister={()=>auth("register")}/>
 
@@ -78,6 +78,7 @@ export default function KairoHome(){
         </div>
       </section>
 
+      <section className="kairoExamples"><article><img src="/kairo-v2/social.jpg" alt="KAIRO con i suoi strumenti social" loading="lazy"/><div><h3>Una direzione per i tuoi social.</h3><p>Analisi, strategia e calendario per lavorare con più chiarezza.</p></div></article><article><img src="/kairo-v2/content.jpg" alt="KAIRO ti aiuta a creare contenuti" loading="lazy"/><div><h3>Più spazio alle tue idee.</h3><p>Copy, visual, caroselli, Reel e Storie nel tuo Studio AI.</p></div></article></section>
       <section className="kairoPromise">
         <span>KAIRO</span>
         <h2>La strategia resta tua.<br/>Il lavoro ripetitivo lo fa l&apos;AI.</h2>
@@ -89,3 +90,4 @@ export default function KairoHome(){
     </main>
   );
 }
+
