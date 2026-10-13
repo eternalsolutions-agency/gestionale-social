@@ -1,4 +1,5 @@
 "use client";
+import {workspaceQuery} from "../lib/workspace";
 import {useEffect,useState} from "react";
 import {zipSync} from "fflate";
 import {supabase} from "../lib/supabase";
@@ -10,7 +11,7 @@ export default function SocialFormatsEditor({kind,contentId,contentTitle,images=
  const[slides,setSlides]=useState(()=>Array.from({length:story?1:5},(_,i)=>makeSlide(i))),[active,setActive]=useState(0),[sourceText,setSourceText]=useState(""),[preview,setPreview]=useState(""),[message,setMessage]=useState(""),[busy,setBusy]=useState(false),[savedSignature,setSavedSignature]=useState(""),[sets,setSets]=useState([]),[workspace,setWorkspace]=useState(null);
  useEffect(()=>{let alive=true;(async()=>{try{
  const{data:{user}}=await supabase.auth.getUser();if(!user)throw new Error("Accedi a KAIRO.");
- const{data:b,error}=await supabase.from("businesses").select("id,name").eq("owner_id",user.id).order("created_at",{ascending:false}).limit(1).maybeSingle();if(error||!b)throw new Error("Workspace non disponibile.");if(!alive)return;
+ const{data:b,error}=await workspaceQuery("id,name").order("created_at",{ascending:false}).limit(1).maybeSingle();if(error||!b)throw new Error("Workspace non disponibile.");if(!alive)return;
  setWorkspace({user,business:b});setDesign(d=>({...d,brand:b.name||"",title:contentTitle||d.title}));
  if(contentId){const{data:c}=await supabase.from("contents").select("title,caption,body,hook,cta,metadata").eq("id",contentId).eq("business_id",b.id).maybeSingle();if(c&&alive){setSourceText(c.caption||c.body||"");setDesign(d=>({...d,title:c.title||d.title}));setSlides(s=>s.map((x,i)=>({...x,heading:i===0?c.title||x.heading:x.heading,body:i===0?c.hook||x.body:c.metadata?.scenes?.[i-1]||x.body,cta:i===s.length-1?c.cta||"":""})));}}
  await history(b.id);if(initialSetId){const{data:saved}=await supabase.from("kairo_media_sets").select("id,title,design").eq("id",initialSetId).eq("business_id",b.id).eq("kind",kind).maybeSingle();if(saved&&alive)await restore(saved,b.id);}

@@ -28,9 +28,9 @@ Deno.serve(async(req:Request)=>{
   const quality=String(body?.quality||"Alta");
   const generationType=String(body?.generation_type||"social_image");
   if(prompt.length<8)return json({error:"Descrivi meglio il visual da creare."},400);
-  const{data:business,error:businessError}=await userClient.from("businesses").select("id,name,industry,target_audience,tone_of_voice,primary_goal").eq("owner_id",user.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
+  const query=userClient.from("businesses").select("id,name,industry,target_audience,tone_of_voice,primary_goal");if(body.business_id)query.eq("id",body.business_id);const{data:business,error:businessError}=await query.order("created_at",{ascending:false}).limit(1).maybeSingle();
   if(businessError||!business)return json({error:"Completa prima il profilo aziendale."},400);
-if(contentId){const{data:target,error:targetError}=await userClient.from("contents").select("id").eq("id",contentId).eq("business_id",business.id).eq("created_by",user.id).maybeSingle();if(targetError||!target)return json({error:"Il contenuto attivo non e disponibile. Seleziona una nuova bozza."},400);}
+if(contentId){const{data:target,error:targetError}=await userClient.from("contents").select("id").eq("id",contentId).eq("business_id",business.id).maybeSingle();if(targetError||!target)return json({error:"Il contenuto attivo non e disponibile. Seleziona una nuova bozza."},400);}
   const{data:brand}=await userClient.from("brand_profiles").select("*").eq("business_id",business.id).maybeSingle();
   const brandContext=[business.name&&`Brand: ${business.name}`,business.industry&&`Settore: ${business.industry}`,business.target_audience&&`Target: ${business.target_audience}`,business.tone_of_voice&&`Tono: ${business.tone_of_voice}`,brand?.visual_style&&`Stile visuale: ${brand.visual_style}`].filter(Boolean).join(". ");
   const finalPrompt=`${prompt}. ${brandContext}. Professional social media visual, polished commercial photography/design, clean composition, no watermark.`;

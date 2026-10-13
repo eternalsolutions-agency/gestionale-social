@@ -11,9 +11,10 @@ export default function AccountOnboardingGate(){
   useEffect(()=>{
     let alive=true;
     async function check(session){
+      if((window.location.pathname==="/team"||(window.location.pathname==="/auth"&&sessionStorage.getItem("kairo_team_invite")))){if(alive){setUser(session?.user||null);setNeedsOnboarding(false);setChecking(false)}return}
       if(!session?.user){if(alive){setUser(null);setNeedsOnboarding(false);setChecking(false)}return}
       if(alive){setUser(session.user);setChecking(true)}
-      const {data,error}=await supabase.from("businesses").select("id,onboarding_completed").eq("owner_id",session.user.id).eq("onboarding_completed",true).limit(1);
+      const {data,error}=await supabase.from("businesses").select("id,onboarding_completed").eq("onboarding_completed",true).limit(1);
       if(alive){setNeedsOnboarding(!error&&(!data||data.length===0));setChecking(false)}
     }
     supabase.auth.getSession().then(({data})=>check(data.session));
@@ -24,3 +25,4 @@ export default function AccountOnboardingGate(){
   if(checking||!user||!needsOnboarding)return null;
   return <div style={{position:"fixed",inset:0,zIndex:2147482500,background:"#050505"}}><Onboarding user={user} onComplete={()=>setNeedsOnboarding(false)}/></div>;
 }
+

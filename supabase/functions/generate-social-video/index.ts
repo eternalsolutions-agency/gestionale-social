@@ -80,7 +80,7 @@ async function submitVideo(req:Request){
  id=reservation.generation_id;
  if(!reservation.is_new)return json({ok:true,generation_id:id,status:reservation.status},202);
  const key=Deno.env.get("FAL_KEY");if(!key)throw new Error("FAL_KEY non configurata");
- const {data:a,error:ae}=await db.from("media_assets").select("storage_path").eq("id",body.asset_id).eq("owner_id",user.id).single();if(ae||!a?.storage_path)throw new Error("Immagine non disponibile");
+ const {data:a,error:ae}=await db.from("media_assets").select("storage_path").eq("id",body.asset_id).single();if(ae||!a?.storage_path)throw new Error("Immagine non disponibile");
  const {data:s,error:se}=await db.storage.from("rp-social-media").createSignedUrl(a.storage_path,86400);if(se||!s?.signedUrl)throw new Error("Impossibile preparare l'immagine");
  submitted=true;
  const r=await fetch("https://queue.fal.run/fal-ai/pika/v2.1/image-to-video",{method:"POST",headers:{Authorization:"Key "+key,"Content-Type":"application/json"},body:JSON.stringify({image_url:s.signedUrl,prompt}),signal:AbortSignal.timeout(25000)});

@@ -14,7 +14,7 @@ export default function AuthPage(){
   const[message,setMessage]=useState("");
   const[error,setError]=useState("");
   const[session,setSession]=useState(null);
-  const enterApp=()=>router.replace("/workspace");
+  const enterApp=()=>router.replace(new URLSearchParams(window.location.search).get("next")==="/team"?"/team":"/workspace");
   useEffect(()=>{
     const requestedTab=new URLSearchParams(window.location.search).get("tab");
     setTab(requestedTab==="register"?"register":"login");
