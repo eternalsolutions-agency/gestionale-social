@@ -10,6 +10,7 @@ import StrategyMount from "../components/StrategyMount";
 import IdeasMount from "../components/IdeasMount";
 import CreatorMount from "../components/CreatorMount";
 import CalendarMount from "../components/CalendarMount";
+import DashboardMount from "../components/DashboardMount";
 import LandingMarketingMount from "../components/LandingMarketingMount";
 import StudioNavigationMount from "../components/StudioNavigationMount";
 import ThemeToggle from "../components/ThemeToggle";
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
         <IdeasMount/>
         <CreatorMount/>
         <CalendarMount/>
+        <DashboardMount/>
         <StudioNavigationMount/>
         <ThemeToggle/>
         <LaserCursor/>
