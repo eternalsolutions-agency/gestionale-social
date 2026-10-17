@@ -1,0 +1,5 @@
+"use client";
+import {useEffect,useState} from "react";
+import {createPortal} from "react-dom";
+import RealLibrary from "./RealLibrary";
+export default function LibraryMount(){const[target,setTarget]=useState(null);useEffect(()=>{const find=()=>{const page=document.querySelector(".app .main .page");const active=[...document.querySelectorAll(".sidebar nav button")].find(b=>b.classList.contains("active"));setTarget((active?.textContent||"").includes("Libreria")?page:null)};find();const o=new MutationObserver(find);o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});document.addEventListener("click",find,true);return()=>{o.disconnect();document.removeEventListener("click",find,true)}},[]);if(!target)return null;return createPortal(<div className="libraryRealLayer"><style>{`.app .main .page{position:relative!important}.libraryRealLayer{position:relative;z-index:103;background:#fff;min-height:calc(100vh - 90px);margin:-1px;padding:1px}.libraryRealLayer~*{display:none!important}`}</style><RealLibrary/></div>,target)}
