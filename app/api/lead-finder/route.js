@@ -3,10 +3,12 @@ import {leadSectors,mapLeadResults,overpassQuery,locationQuery} from '../../../l
 export const dynamic='force-dynamic';
 export const maxDuration=60;
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
+const supabaseUrl=process.env.NEXT_PUBLIC_SUPABASE_URL||'https://tkjajqizdjaynslvwcfp.supabase.co';
+const supabaseKey=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY||process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||'sb_publishable_VgyXCuW3mJtHi96I8Lo2gg_hvCEWbgh';
 export async function POST(req){
  try{
   const token=req.headers.get('authorization')?.match(/^Bearer (.+)$/)?.[1];if(!token)return json({error:'Accedi a KAIRO.'},401);
-  const db=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false},global:{headers:{Authorization:'Bearer '+token}}});
+  const db=createClient(supabaseUrl,supabaseKey,{auth:{persistSession:false,autoRefreshToken:false},global:{headers:{Authorization:'Bearer '+token}}});
   const {data:{user},error:authError}=await db.auth.getUser(token);if(authError||!user)return json({error:'Sessione non valida.'},401);
   const raw=await req.text();if(raw.length>3000)return json({error:'Richiesta troppo grande.'},400);let body;try{body=JSON.parse(raw);}catch{return json({error:'Richiesta non valida.'},400);}
   const {business_id,sector,city,radius}=body,category=leadSectors.find(s=>s[0]===sector)?.[1];if(!category||typeof city!=='string'||city.trim().length<2||city.length>120||![10,25,50].includes(radius)||typeof business_id!=='string')return json({error:'Scegli settore, città/zona e raggio.'},400);
