@@ -1,0 +1,5 @@
+"use client";
+import {useEffect,useState} from "react";
+import {createPortal} from "react-dom";
+import RealSettings from "./RealSettings";
+export default function SettingsMount(){const[target,setTarget]=useState(null);useEffect(()=>{const find=()=>{const page=document.querySelector(".app .main .page");const active=[...document.querySelectorAll(".sidebar nav button")].find(b=>b.classList.contains("active"));setTarget((active?.textContent||"").includes("Impostazioni")?page:null)};find();const o=new MutationObserver(find);o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});document.addEventListener("click",find,true);return()=>{o.disconnect();document.removeEventListener("click",find,true)}},[]);if(!target)return null;return createPortal(<div className="settingsRealLayer"><style>{`.app .main .page{position:relative!important}.settingsRealLayer{position:relative;z-index:105;background:#fff;min-height:calc(100vh - 90px);margin:-1px;padding:1px}.settingsRealLayer~*{display:none!important}`}</style><RealSettings/></div>,target)}
