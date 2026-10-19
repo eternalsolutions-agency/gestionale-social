@@ -2,8 +2,8 @@ import "./globals.css";
 import "./rippy-hero-fix.css";
 import "./theme.css";
 import "./kairo-assets.css";
+import "./usability.css";
 import KairoExperience from "../components/KairoExperience";
-import LaserCursor from "../components/LaserCursor";
 import AccountOnboardingGate from "../components/AccountOnboardingGate";
 import AnalysisGate from "../components/AnalysisGate";
 import StrategyMount from "../components/StrategyMount";
@@ -42,7 +42,6 @@ export default function RootLayout({ children }) {
         <SettingsMount/>
         <StudioNavigationMount/>
         <ThemeToggle/>
-        <LaserCursor/>
       </body>
     </html>
   );

@@ -11,6 +11,7 @@ export default function AccountOnboardingGate(){
   useEffect(()=>{
     let alive=true;
     async function check(session){
+      if(window.location.pathname==="/auth"||window.location.pathname==="/auth/reset") {if(alive){setNeedsOnboarding(false);setChecking(false)}return}
       if((window.location.pathname==="/team"||(window.location.pathname==="/auth"&&sessionStorage.getItem("kairo_team_invite")))){if(alive){setUser(session?.user||null);setNeedsOnboarding(false);setChecking(false)}return}
       if(!session?.user){if(alive){setUser(null);setNeedsOnboarding(false);setChecking(false)}return}
       if(alive){setUser(session.user);setChecking(true)}
