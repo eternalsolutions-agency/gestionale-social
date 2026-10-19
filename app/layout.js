@@ -3,10 +3,12 @@ import "./rippy-hero-fix.css";
 import "./theme.css";
 import "./kairo-assets.css";
 import "./usability.css";
+import "./effects.css";
 import KairoExperience from "../components/KairoExperience";
 import AccountOnboardingGate from "../components/AccountOnboardingGate";
 import LandingMarketingMount from "../components/LandingMarketingMount";
 import WorkspaceNavigation from "../components/WorkspaceNavigation";
+import VisualEffects from "../components/VisualEffects";
 import ThemeToggle from "../components/ThemeToggle";
 
 export const metadata = {
@@ -24,6 +26,7 @@ export default function RootLayout({ children }) {
         <KairoExperience/>
         <LandingMarketingMount/>
         <AccountOnboardingGate/>
+        <VisualEffects/>
         <ThemeToggle/>
       </body>
     </html>
