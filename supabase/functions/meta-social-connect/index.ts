@@ -17,10 +17,10 @@ Deno.serve(async(req)=>{
  const {sb}=await authenticated(req);const body=await req.json().catch(()=>({}));const action=body.action||"status";
  const appId=Deno.env.get("META_APP_ID"),secret=Deno.env.get("META_APP_SECRET");
  const configured=Boolean(appId&&secret);
- if(action==="status")return json({configured,redirect_uri:CALLBACK});
+ if(action==="status")return json({configured,redirect_uri:CALLBACK,media_configured:Boolean(Deno.env.get("FAL_KEY"))});
  if(action!=="authorize")return json({error:"Azione non supportata"},400);
  if(!configured)return json({configured:false,error:"Configura META_APP_ID e META_APP_SECRET nei Secrets di Supabase."},409);
- const {data:state,error}=await sb.rpc("kairo_create_meta_state");if(error||!state)throw new Error(error?.message||"Impossibile iniziare il collegamento");
+ const {data:state,error}=await (body.business_id?sb.rpc("kairo_create_meta_state_for_business",{p_business:body.business_id}):sb.rpc("kairo_create_meta_state"));if(error||!state)throw new Error(error?.message||"Impossibile iniziare il collegamento");
  const url=new URL("https://www.facebook.com/"+(Deno.env.get("META_GRAPH_VERSION")||"v24.0")+"/dialog/oauth");
  url.searchParams.set("client_id",appId!);url.searchParams.set("redirect_uri",CALLBACK);url.searchParams.set("state",state);
  const config=Deno.env.get("META_LOGIN_CONFIG_ID");
