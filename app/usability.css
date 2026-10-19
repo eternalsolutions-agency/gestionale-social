@@ -19,3 +19,5 @@ html{font-size:16px;scroll-padding-top:90px}body{line-height:1.5}button,input,se
 @media print{.workspaceRouteNav,.skipLink{display:none!important}}
 
 @media(max-width:760px){.sidebar:not(.open){visibility:hidden;pointer-events:none}.sidebar.open{visibility:visible;pointer-events:auto}}
+
+.editorialAIActions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0 22px}.aiTextStatus{font-size:14px;line-height:1.7;color:#526478;max-width:650px}.aiTextStatus a{color:#1763d1;font-weight:650}.editorialAISource{font-size:14px;color:#526478}.editorialAIError{padding:14px 18px;background:#fff2f3;color:#9b2237;border:1px solid #efc6cd;border-radius:10px;font-size:15px}.rsBtn:disabled,.riBtn:disabled{opacity:.6;cursor:not-allowed}.editorialAIActions .rsBtn,.editorialAIActions .riBtn{margin-top:0}
