@@ -54,3 +54,12 @@ Aggiornamento: 19 ottobre 2026.
 - Stripe non collegato a Vercel al controllo; integrazione Stripe disponibile ma non installata in ChatGPT.
 - Checkout, webhook e acquisti non implementati in questo blocco: richiedono prima il collegamento al provider reale.
 - Test aggiuntivi per il riepilogo: etichetta testi visibile; consumo aggiornato dopo copy/strategia/idee; nessun consumo per modifica manuale o proposta guidata; verifica visuale con tutte e cinque le categorie.
+
+### Collegamento Stripe e blocco sandbox predisposto
+
+- Stripe collegato: verificato il sandbox RP SOCIAL OS. Creati tre prodotti, sei prezzi ricorrenti, configurazione portale e webhook test.
+- Implementata pagina Abbonamento, scelta piano e ritorno sicuro dopo il login.
+- Backend test e webhook distribuiti; database separato dagli abbonamenti reali, senza accesso diretto degli utenti.
+- 11 test del blocco billing, build e smoke su 15 pagine passati; test transazionali del database passati con rollback.
+- Acquisto completo nel sandbox ancora da verificare: chiave riservata e segreto webhook devono essere configurati nei Secrets Supabase, insieme agli utenti autorizzati e al flag test.
+- Dettagli di attivazione e test in `docs/stripe-activation.md`. Nessun incasso reale attivato e nessuna modifica alle quote degli utenti reali.

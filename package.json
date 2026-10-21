@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:smoke": "node scripts/smoke.mjs"
+    "test:smoke": "node scripts/smoke.mjs",
+    "test:billing": "node --test scripts/billing.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.3",
@@ -18,5 +19,8 @@
   },
   "overrides": {
     "postcss": "8.5.31"
+  },
+  "devDependencies": {
+    "stripe": "23.0.0"
   }
 }
