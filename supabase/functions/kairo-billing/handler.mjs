@@ -9,7 +9,7 @@ export function billingHandler({db,stripe,authenticate,site,enabled,allowedUsers
   if(req.method!=='POST')return json({error:'Metodo non disponibile.'},405);
   const origin=req.headers.get('origin');if(origin&&origin!==site)return json({error:'Origine non consentita.'},403);
   try{
-   const user=await authenticate(req);if(!user)return json({error:'Accedi a KAIRO.'},401);
+   const user=await authenticate(req);if(!user)return json({error:'Accedi a RP Social.'},401);
    let body;try{body=await req.json()}catch{return json({error:'Richiesta non valida.'},400)}
    if(!['status','checkout','portal','cancel_checkout'].includes(body.action))return json({error:'Operazione non disponibile.'},400);
    const business=await checked(db.from('businesses').select('id,owner_id').eq('id',body.business_id).maybeSingle());
@@ -24,14 +24,12 @@ export function billingHandler({db,stripe,authenticate,site,enabled,allowedUsers
    }
    if(body.action==='cancel_checkout'){
     if(row?.checkout_session_id){const session=await stripe.checkout.sessions.retrieve(row.checkout_session_id);if(session.status==='complete')return json({error:'Il checkout è già completato. Aggiorna lo stato o apri Gestisci abbonamento.'},409);if(session.status==='open')await stripe.checkout.sessions.expire(session.id)}
-    // A claim without a recorded session may have been created by a concurrent request.
     if(row?.checkout_attempt&&!row.checkout_session_id)return json({error:'Il checkout è ancora in preparazione. Attendi e riprova.'},409);
     if(row)await checked(db.from('kairo_test_billing_accounts').update({checkout_attempt:null,checkout_session_id:null,checkout_expires_at:null}).eq('owner_id',user.id).eq('checkout_attempt',row.checkout_attempt));
     return json({cancelled:true});
    }
    let price;try{price=selectedPrice(body.plan,body.interval)}catch(e){return json({error:e.message},400)}
    const remotePrice=await stripe.prices.retrieve(price);pricePlan(remotePrice);if(!remotePrice.active)return json({error:'Piano non disponibile.'},409);
-   // Claim a durable attempt before calling Stripe: concurrent clicks share the same key.
    const claim=await checked(db.rpc('kairo_test_checkout_claim',{p_owner:user.id,p_plan:body.plan,p_interval:body.interval}));
    let customer=claim.customer_id;
    if(!customer){const created=await stripe.customers.create({email:user.email,metadata:{application:'kairo',owner_id:user.id}},{idempotencyKey:'kairo-test-customer-'+user.id});customer=created.id;await checked(db.from('kairo_test_billing_accounts').update({customer_id:customer}).eq('owner_id',user.id))}
