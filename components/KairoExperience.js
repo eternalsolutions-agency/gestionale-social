@@ -1,0 +1,3 @@
+"use client";
+import {useEffect} from "react";
+export default function KairoExperience(){useEffect(()=>{const replacements=[['RP SOCIAL DASHBOARD','KAIRO DASHBOARD'],['RP Social AI','KAIRO AI'],['Cerca in RP Social...','Cerca in KAIRO...'],['RP Social','KAIRO'],['RP SOCIAL','KAIRO'],['Rippy','KAIRO'],['RIPPY','KAIRO']];const apply=()=>{const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while(n=walker.nextNode()){if(['SCRIPT','STYLE'].includes(n.parentElement?.tagName))continue;let v=n.nodeValue;for(const[a,b]of replacements)v=v.replaceAll(a,b);if(v!==n.nodeValue)n.nodeValue=v}};apply();const mo=new MutationObserver(apply);mo.observe(document.body,{childList:true,subtree:true});return()=>mo.disconnect()},[]);return null}

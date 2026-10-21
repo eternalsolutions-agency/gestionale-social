@@ -1,0 +1,5 @@
+"use client";
+import {useEffect,useState} from "react";
+import {createPortal} from "react-dom";
+import RealDashboard from "./RealDashboard";
+export default function DashboardMount(){const[target,setTarget]=useState(null);useEffect(()=>{const find=()=>{const page=document.querySelector(".app .main .page");const active=[...document.querySelectorAll(".sidebar nav button")].find(b=>b.classList.contains("active"));const isDashboard=(active?.textContent||"").includes("Dashboard");setTarget(isDashboard?page:null)};find();const o=new MutationObserver(find);o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});document.addEventListener("click",find,true);return()=>{o.disconnect();document.removeEventListener("click",find,true)}},[]);if(!target)return null;return createPortal(<div className="dashboardRealLayer"><style>{`.app .main .page{position:relative!important}.dashboardRealLayer{position:relative;z-index:102;background:#fff;min-height:calc(100vh - 90px);margin:-1px;padding:1px}.dashboardRealLayer~*{display:none!important}`}</style><RealDashboard/></div>,target)}
