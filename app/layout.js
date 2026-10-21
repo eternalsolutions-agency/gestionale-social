@@ -4,6 +4,7 @@ import "./theme.css";
 import "./kairo-assets.css";
 import "./usability.css";
 import "./effects.css";
+import "./ideas-polish.css";
 import KairoExperience from "../components/KairoExperience";
 import AccountOnboardingGate from "../components/AccountOnboardingGate";
 import LandingMarketingMount from "../components/LandingMarketingMount";
