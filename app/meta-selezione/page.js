@@ -1,13 +1,17 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {useRouter,useSearchParams} from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import {supabase} from '../../lib/supabase';
 
 export default function MetaSelezione(){
- const router=useRouter(),params=useSearchParams();
- const token=params.get('token')||'';
+ const router=useRouter();
+ const [token,setToken]=useState('');
  const [pages,setPages]=useState([]),[selected,setSelected]=useState([]),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[error,setError]=useState('');
- useEffect(()=>{(async()=>{if(!token){setError('Selezione Meta non valida.');setLoading(false);return;}const {data,error}=await supabase.rpc('kairo_get_meta_selection',{p_selection_token:token});if(error){setError(error.message||'Selezione scaduta. Riprova il collegamento Meta.');setLoading(false);return;}const list=Array.isArray(data)?data:[];setPages(list);setSelected(list.map(x=>x.page_id));setLoading(false);})()},[token]);
+ useEffect(()=>{
+  const currentToken=new URLSearchParams(window.location.search).get('token')||'';
+  setToken(currentToken);
+  (async()=>{if(!currentToken){setError('Selezione Meta non valida.');setLoading(false);return;}const {data,error}=await supabase.rpc('kairo_get_meta_selection',{p_selection_token:currentToken});if(error){setError(error.message||'Selezione scaduta. Riprova il collegamento Meta.');setLoading(false);return;}const list=Array.isArray(data)?data:[];setPages(list);setSelected(list.map(x=>x.page_id));setLoading(false);})();
+ },[]);
  function toggle(id){setSelected(v=>v.includes(id)?v.filter(x=>x!==id):[...v,id])}
  async function confirm(){if(!selected.length){setError('Seleziona almeno una Pagina Facebook.');return;}setSaving(true);setError('');const {data,error}=await supabase.rpc('kairo_confirm_meta_selection',{p_selection_token:token,p_page_ids:selected});if(error){setError(error.message||'Collegamento non riuscito.');setSaving(false);return;}router.replace('/?meta=connected&accounts='+encodeURIComponent(String(data||0)));}
  if(loading)return <main style={{maxWidth:760,margin:'60px auto',padding:24}}><h1>Carico i tuoi account Meta…</h1></main>;
