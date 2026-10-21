@@ -4,16 +4,27 @@ export function billingHandler({db,stripe,authenticate,site,enabled,allowedUsers
  const json=(value,status=200)=>Response.json(value,{status,headers:cors});
  const checked=async(promise)=>{const r=await promise;if(r.error)throw r.error;return r.data};
  async function account(owner){return await checked(db.from('kairo_test_billing_accounts').select('*').eq('owner_id',owner).maybeSingle())}
- async function refresh(owner,row){
-  if(!stripe||!row?.subscription_id)return row;
+ async function remoteState(owner,row){
+  if(!stripe||!row?.subscription_id)return{row,scheduled_change:null};
   const sub=await stripe.subscriptions.retrieve(row.subscription_id,{expand:['latest_invoice']});
-  if(sub.metadata?.application!=='kairo'||sub.metadata?.owner_id!==owner)return row;
+  if(sub.metadata?.application!=='kairo'||sub.metadata?.owner_id!==owner)return{row,scheduled_change:null};
   const invoice=typeof sub.latest_invoice==='string'?await stripe.invoices.retrieve(sub.latest_invoice):sub.latest_invoice;
   const snap=subscriptionSnapshot(sub,invoice);
-  if(snap.customer_id!==row.customer_id)return row;
+  if(snap.customer_id!==row.customer_id)return{row,scheduled_change:null};
   const patch={plan:snap.plan,billing_interval:snap.interval,status:snap.status,cancel_at_period_end:snap.cancel_at_period_end,paid_until:snap.paid?snap.paid_until:row.paid_until,updated_at:new Date().toISOString()};
   await checked(db.from('kairo_test_billing_accounts').update(patch).eq('owner_id',owner).eq('subscription_id',row.subscription_id));
-  return {...row,...patch};
+  let scheduled_change=null;
+  if(sub.schedule){
+   const scheduleId=typeof sub.schedule==='string'?sub.schedule:sub.schedule.id;
+   const schedule=await stripe.subscriptionSchedules.retrieve(scheduleId);
+   const now=Math.floor(Date.now()/1000);
+   const future=schedule.phases?.find(ph=>ph.start_date>now&&ph.items?.length===1);
+   if(future){
+    const item=future.items[0],priceId=typeof item.price==='string'?item.price:item.price?.id||item.plan;
+    if(priceId){const remotePrice=await stripe.prices.retrieve(priceId);const next=pricePlan(remotePrice);if(next.plan!==snap.plan||next.interval!==snap.interval)scheduled_change={plan:next.plan,interval:next.interval,effective_at:new Date(future.start_date*1000).toISOString()}}
+   }
+  }
+  return{row:{...row,...patch},scheduled_change};
  }
  return async req=>{
   if(req.method==='OPTIONS')return new Response('ok',{headers:cors});
@@ -25,9 +36,9 @@ export function billingHandler({db,stripe,authenticate,site,enabled,allowedUsers
    if(!['status','checkout','portal','cancel_checkout'].includes(body.action))return json({error:'Operazione non disponibile.'},400);
    const business=await checked(db.from('businesses').select('id,owner_id').eq('id',body.business_id).maybeSingle());
    if(!business||business.owner_id!==user.id)return json({error:'Solo il titolare può gestire l’abbonamento.'},403);
-   let row=await account(user.id),ready=!!stripe&&enabled&&webhookReady&&allowedUsers.includes(user.id);
-   if(body.action==='status'&&ready&&row?.subscription_id)row=await refresh(user.id,row);
-   if(body.action==='status')return json({mode:'test',ready,catalog:Object.entries(BILLING_PLANS).map(([id,p])=>({id,name:p.name,month:p.month,year:p.year})),subscription:row?{plan:row.plan,interval:row.billing_interval,status:row.status,cancel_at_period_end:row.cancel_at_period_end,paid_until:row.paid_until,has_customer:!!row.customer_id,checkout_pending:!!row.checkout_attempt,checkout_plan:row.checkout_plan,checkout_interval:row.checkout_interval}:null,note:ready?'Modalità test: nessun incasso reale e nessuna modifica alle quote reali.':'Checkout test in preparazione. Il titolare deve completare la configurazione server.'});
+   let row=await account(user.id),scheduled_change=null,ready=!!stripe&&enabled&&webhookReady&&allowedUsers.includes(user.id);
+   if(body.action==='status'&&ready&&row?.subscription_id){const state=await remoteState(user.id,row);row=state.row;scheduled_change=state.scheduled_change}
+   if(body.action==='status')return json({mode:'test',ready,catalog:Object.entries(BILLING_PLANS).map(([id,p])=>({id,name:p.name,month:p.month,year:p.year})),subscription:row?{plan:row.plan,interval:row.billing_interval,status:row.status,cancel_at_period_end:row.cancel_at_period_end,paid_until:row.paid_until,has_customer:!!row.customer_id,checkout_pending:!!row.checkout_attempt,checkout_plan:row.checkout_plan,checkout_interval:row.checkout_interval,scheduled_change}:null,note:ready?'Modalità test: nessun incasso reale e nessuna modifica alle quote reali.':'Checkout test in preparazione. Il titolare deve completare la configurazione server.'});
    if(!ready)return json({error:'Il checkout test non è ancora attivo. Completa la configurazione server.'},503);
    if(body.action==='portal'){if(!row?.customer_id)return json({error:'Non hai ancora un abbonamento test da gestire.'},409);const portal=await stripe.billingPortal.sessions.create({customer:row.customer_id,configuration:BILLING_PORTAL,return_url:site+'/abbonamento'});return json({url:safeStripeRedirect(portal.url)});}
    if(body.action==='cancel_checkout'){if(row?.checkout_session_id){const session=await stripe.checkout.sessions.retrieve(row.checkout_session_id);if(session.status==='complete')return json({error:'Il checkout è già completato. Aggiorna lo stato o apri Gestisci abbonamento.'},409);if(session.status==='open')await stripe.checkout.sessions.expire(session.id)}if(row?.checkout_attempt&&!row.checkout_session_id)return json({error:'Il checkout è ancora in preparazione. Attendi e riprova.'},409);if(row)await checked(db.from('kairo_test_billing_accounts').update({checkout_attempt:null,checkout_session_id:null,checkout_expires_at:null}).eq('owner_id',user.id).eq('checkout_attempt',row.checkout_attempt));return json({cancelled:true});}
