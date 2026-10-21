@@ -13,8 +13,8 @@ import VisualEffects from "../components/VisualEffects";
 import ThemeToggle from "../components/ThemeToggle";
 
 export const metadata = {
-  title: "KAIRO — Il contenuto giusto, al momento giusto",
-  description: "KAIRO analizza, pianifica e crea i tuoi contenuti social con l'intelligenza artificiale. Creati dall'AI, approvati da te."
+  title: "RP Social — Il contenuto giusto, al momento giusto",
+  description: "RP Social analizza, pianifica e crea i tuoi contenuti social con l'intelligenza artificiale. Creati dall'AI, approvati da te."
 };
 
 export default function RootLayout({ children }) {
