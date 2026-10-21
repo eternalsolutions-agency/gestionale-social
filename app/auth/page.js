@@ -1,11 +1,12 @@
 "use client";
 import KairoBrand from "../../components/KairoBrand";
+import {authReturnPath} from "../../lib/auth-return.mjs";
 import {useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
 import {supabase} from "../../lib/supabase";
 export default function AuthPage(){
  const router=useRouter();const[tab,setTab]=useState('login'),[name,setName]=useState(''),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[loading,setLoading]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState(''),[session,setSession]=useState(null),[checking,setChecking]=useState(true);
- const enterApp=()=>router.replace(new URLSearchParams(window.location.search).get('next')==='/team'?'/team':'/workspace');
+ const enterApp=()=>router.replace(authReturnPath(new URLSearchParams(window.location.search).get('next'),window.location.origin));
  useEffect(()=>{setTab(new URLSearchParams(window.location.search).get('tab')==='register'?'register':'login');supabase.auth.getSession().then(({data})=>{setSession(data.session);setChecking(false)});const{data:listener}=supabase.auth.onAuthStateChange((event,next)=>{if(event==='PASSWORD_RECOVERY'){router.replace('/auth/reset');return}setSession(next)});return()=>listener.subscription.unsubscribe()},[router]);
  function change(next){setTab(next);setMessage('');setError('')}
  async function logout(){setLoading(true);try{const r=await supabase.auth.signOut();if(r.error)throw r.error;setSession(null);setPassword('')}catch{setError('Disconnessione non riuscita. Riprova.')}finally{setLoading(false)}}
