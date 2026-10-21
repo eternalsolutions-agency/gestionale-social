@@ -45,3 +45,12 @@ Aggiornamento: 19 ottobre 2026.
 - Percorso di creazione e libreria; notifiche; pubblicazione caroselli/storie e report Meta.
 - Sottotitoli automatici opzionali, import Drive/Canva, nuovi canali e offerta agenzie.
 - Bot social ancora sospesi, come concordato.
+
+## Blocco 2 — quote e preparazione dei pagamenti (21 ottobre 2026)
+
+- Corretta l’etichetta Testi AI nella pagina quote e aggiunto il limite Start già esistente (100/mese).
+- Aggiornamento dei contatori dopo una generazione AI riuscita, anche nel pannello impostazioni.
+- Schede quote adattate al numero di categorie presenti.
+- Stripe non collegato a Vercel al controllo; integrazione Stripe disponibile ma non installata in ChatGPT.
+- Checkout, webhook e acquisti non implementati in questo blocco: richiedono prima il collegamento al provider reale.
+- Test aggiuntivi per il riepilogo: etichetta testi visibile; consumo aggiornato dopo copy/strategia/idee; nessun consumo per modifica manuale o proposta guidata; verifica visuale con tutte e cinque le categorie.
