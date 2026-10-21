@@ -20,6 +20,6 @@ export function subscriptionSnapshot(sub,invoice){
 }
 export function checkoutPayload({customer,owner,price,site,attempt}){
  const suffix=attempt.replace(/-/g,'').slice(0,8).split('').map(c=>String.fromCharCode(97+parseInt(c,16))).join('');
- return{mode:'subscription',customer,client_reference_id:owner,line_items:[{price,quantity:1}],subscription_data:{billing_mode:{type:'flexible'},metadata:{application:'kairo',owner_id:owner}},metadata:{application:'kairo',owner_id:owner},billing_address_collection:'required',tax_id_collection:{enabled:true},customer_update:{name:'auto',address:'auto'},integration_identifier:'kairo_sandbox_'+suffix,success_url:site+'/abbonamento?checkout=returned',cancel_url:site+'/abbonamento?checkout=cancelled'};
+ return{mode:'subscription',customer,client_reference_id:owner,line_items:[{price,quantity:1}],automatic_tax:{enabled:true},subscription_data:{billing_mode:{type:'flexible'},metadata:{application:'kairo',owner_id:owner}},metadata:{application:'kairo',owner_id:owner},billing_address_collection:'required',tax_id_collection:{enabled:true},customer_update:{name:'auto',address:'auto'},integration_identifier:'kairo_sandbox_'+suffix,success_url:site+'/abbonamento?checkout=returned',cancel_url:site+'/abbonamento?checkout=cancelled'};
 }
 export function safeStripeRedirect(value){const u=new URL(value);if(u.protocol!=='https:'||!['checkout.stripe.com','billing.stripe.com'].includes(u.hostname)||u.username||u.password)throw Error('Collegamento Stripe non valido.');return u.href;}
