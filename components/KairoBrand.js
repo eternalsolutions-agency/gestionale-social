@@ -1,1 +1,0 @@
-export default function KairoBrand(){return <div className="brand kairoLogo"><span className="kairoLogoMark"><img src="/kairo-v2/mascot.jpg" alt="" width="52" height="52"/></span><span className="kairoLogoText"><b>KAIRO</b><small>AI SOCIAL WORKSPACE</small></span></div>}

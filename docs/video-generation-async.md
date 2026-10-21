@@ -1,9 +1,0 @@
-# Background Reel generation
-Studio AI submits the video request and immediately receives a generation ID. It checks progress every six seconds while open. Supabase checks pending requests every minute while the project is active, so the finished video can be saved with the Studio closed.
-The same generate-social-video Edge Function handles submit, action=status, action=recent and the authenticated scheduler request. It validates user JWTs against Supabase Auth for browser calls; the scheduler uses the server-only Vault key. JWT gateway verification is disabled because these two authentication paths are checked inside the function.
-Provider request URLs and lease state are stored in kairo_video_requests, which grants access only to service_role. User-facing RPCs validate ownership of the source asset and content.
-A client request ID prevents duplicate paid submissions. Short leases prevent concurrent result finalization; the completion transaction creates one media asset and links it to the generation and originating content.
-Provider errors are persisted. Network errors during polling or saving are retried without submitting another paid generation. An uncertain submit is flagged for verification rather than automatically resubmitted.
-The result is downloaded from the Fal media CDN and stored in the private rp-social-media bucket; signed URLs are generated for playback. Maximum saved video size is 50 MB.
-A reload recovers pending requests and displays recent jobs. Only selected/authorized content and media are associated. Existing scheduled posts keep their confirmed media.
-Validation: Next.js production build, Deno type check, 12 mocked async API scenarios, SQL transaction tests for ownership, idempotency, concurrent claims and single output creation; live scheduler returned HTTP 200 on an empty queue. No paid inference was started during testing.

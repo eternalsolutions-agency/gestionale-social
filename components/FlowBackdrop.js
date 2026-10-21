@@ -1,3 +1,0 @@
-import Image from "next/image";
-export function flowScene(title=""){const text=String(title).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");if(/programm|calend|pubblic|social colleg|conversion|organizza/.test(text))return "schedule";if(/analiz|analisi|score|approv|controll|autorevol/.test(text))return "analyze";if(/ide[ae]|script|educ|valore/.test(text))return "ideas";if(/crea|contenut|studio|conness|prepara il lavoro|trasforma/.test(text))return "create";return "plan";}
-export default function FlowBackdrop({title,scene}){return <Image className="flowPhoto" src={"/flows/"+(scene||flowScene(title))+".png"} width={480} height={320} quality={70} sizes="(max-width: 850px) 420px, 320px" alt="" aria-hidden="true" loading="lazy"/>}

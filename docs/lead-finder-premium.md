@@ -1,9 +1,0 @@
-# KAIRO Lead Finder Premium
-
-Searches Italian cities and districts using OpenStreetMap Overpass; fixed categories and radii 10/25/50 km, up to 50 results. Source data is incomplete; absent fields are not evidence of an absent site or social profile. Links to Google Maps open external search; there is no Google API import or scraping. No Nominatim public API is used.
-
-Premium eligibility comes from subscriptions.plan=premium, status active/trialing and an unexpired current_period_end (or null for an active subscription without a supplied end). No subscriptions or entitlements are granted by this change. Initial administrator-configurable limits in kairo_private.lead_limits are 30 initiated searches and 100 new saved contacts per calendar month in Europe/Rome. Failed searches count as attempts. User and provider throttles are transactionally reserved. Duplicate saves do not consume quota; deletion does not restore quota. Adjust limits with trusted server/admin SQL, never browser user metadata.
-
-CRM stages: found, to_contact, contacted, interested, proposal, customer. Notes and next follow-up are user-entered. Website analysis reuses the existing homepage signal analyzer and does not claim AI-generated research. CSV exports the filtered loaded records (latest 500), includes ODbL attribution and protects against spreadsheet formulas. No outbound messaging is performed.
-
-Public provider availability may vary; errors and partial-result remarks are surfaced instead of returning fabricated results. Source links and attribution are displayed; published exports retain the source licence. Authenticated JWT is validated server-side, database RPCs enforce business ownership, entitlement and quotas. Tables use RLS and allow no direct browser writes. SECURITY DEFINER RPCs intentionally expose these controlled operations with a fixed empty search path, anonymous execute revoked, and auth.uid checks. Private quota tables have no client policies or grants.
